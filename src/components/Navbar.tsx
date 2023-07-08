@@ -75,10 +75,6 @@ const Navbar: React.FC = () => {
     },
 
     {
-      title: 'Обновление ПО',
-      link: '/admin/software/update',
-    },
-    {
       title: 'Выход',
       link: '/',
     },

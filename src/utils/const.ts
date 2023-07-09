@@ -8,6 +8,8 @@ export const ACTIONS = {
   user: 'user',
   queues: 'queues',
   rejectedQueue: 'rejectedQueue',
+  users: "users",
+  customers: "customers"
 } as const;
 
 export const TRANSITION = 150;

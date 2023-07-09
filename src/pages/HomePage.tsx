@@ -10,12 +10,16 @@ import { useQueueContext } from 'src/context/QueueContext';
 import TicketModal from 'src/components/modals/home-modals/TicketModal';
 
 function HomePage() {
-  const { getCustomers, queues, deleteQueue, handleDragEnd } =
+  const { getCustomers, queues, deleteQueue, getActiveUsers, users, customers, getAllCustomers } =
     useQueueContext();
 
   useEffect(() => {
     getCustomers();
+    getActiveUsers();
+    getAllCustomers()
   }, []);
+
+  console.log(customers)
   const [content1, setContent1] = useState(false);
   const [content2, setContent2] = useState(false);
   const [content3, setContent3] = useState(false);
@@ -72,6 +76,8 @@ function HomePage() {
   let index = '';
   let item = '';
 
+  console.log(queues)
+
   return (
     <div className={styles.hero}>
       <div className={styles.content}>
@@ -89,7 +95,7 @@ function HomePage() {
             Количество активных очередей
           </div>
           <div className={styles.circles}>
-            <div className={styles.queue__state__counter}>8</div>
+            <div className={styles.queue__state__counter}>{ queues?.length }</div>
             <div className={styles.queue__state__add}>
               <img src={GalaAdd} alt="" />
             </div>
@@ -106,7 +112,7 @@ function HomePage() {
           <div className={styles.table}>
             <div className={styles.tableItems}>
               <div className={styles.tableItem__tbody}>
-                {/* {queues?.map((item: any, index: number) => ( */}
+                {queues?.map((item: any, index: number) => (
                 <div
                   className={`${styles.tbody__item__talon}`}
                   style={
@@ -114,40 +120,11 @@ function HomePage() {
                       ? { background: 'rgba(248, 248, 248, 1)' }
                       : undefined
                   }
+                  key={item.id}
                 >
-                  <div className={styles.tbody__talon}>
+                  <div className={styles.tbody__talon} style={{ width: "300px" }}>
                     <div className={styles.tbody__number}>{index + 1}.</div>
-                    <span
-                      style={
-                        item.category === 'pregnant'
-                          ? {
-                              background: 'rgba(252, 190, 183, 1)',
-                            }
-                          : item.category === 'veteran'
-                          ? {
-                              background: 'rgba(155, 228, 129, 1)',
-                            }
-                          : item.category === 'pensioner'
-                          ? {
-                              background: 'rgba(234, 237, 93, 1)',
-                            }
-                          : item.category === 'disabled person'
-                          ? {
-                              background: 'rgba(228, 129, 201, 1)',
-                            }
-                          : undefined
-                      }
-                    ></span>
-                    {' Касса 1 '}
-                    {item.ticket_number}
-                  </div>
-                  <div className={styles.tbody__question}>
-                    {item.queue}
-                    {'Кассовые операции'}
-                  </div>
-                  <div className={styles.tbody__time}>
-                    {/* {convertTime(item.waiting_time)} */}
-                    {'10-15min'}
+                    {item.name}
                   </div>
                   <div className={styles.tbody__buttons}>
                     <img
@@ -168,7 +145,7 @@ function HomePage() {
                     />
                   </div>
                 </div>
-                {/* ))} */}
+                 ))} 
               </div>
             </div>
           </div>
@@ -187,7 +164,7 @@ function HomePage() {
             Количество активных операторов
           </div>
           <div className={styles.circles}>
-            <div className={styles.queue__state__counter}>8</div>
+            <div className={styles.queue__state__counter}>{ users?.length }</div>
             <div className={styles.queue__state__add}>
               <img src={GalaAdd} alt="" />
             </div>
@@ -205,7 +182,7 @@ function HomePage() {
           <div className={styles.table}>
             <div className={styles.tableItems}>
               <div className={styles.tableItem__tbody}>
-                {/* {queues?.map((item: any, index: number) => ( */}
+                {users?.map((item: any, index: number) => (
                 <div
                   className={`${styles.tbody__item__talon}`}
                   style={
@@ -237,22 +214,15 @@ function HomePage() {
                           : undefined
                       }
                     ></span>
-                    {' Окно 1 '}
-                    {item.ticket_number}
+                    {` Окно ${index + 1}`}
                   </div>
                   <div className={styles.tbody__question}>
-                    {item.queue}
-                    {'Рыскулов В.'}
+                    {item.username}
                   </div>
                   <div className={styles.tbody__operat_state}>
                     {/* {convertTime(item.waiting_time)} */}
-                    {'Принимает'}
+                    {/* {'Принимает'} */}
                   </div>
-                  <div className={styles.tbody__time}>
-                    {/* {convertTime(item.waiting_time)} */}
-                    {'10-15min'}
-                  </div>
-
                   <div className={styles.tbody__buttons}>
                     <img
                       src={Settings}
@@ -272,7 +242,7 @@ function HomePage() {
                     />
                   </div>
                 </div>
-                {/* ))} */}
+                ))} 
               </div>
             </div>
           </div>
@@ -291,7 +261,7 @@ function HomePage() {
             Общее количество посетителей в очереди
           </div>
           <div className={styles.circles}>
-            <div className={styles.queue__state__counter}>8</div>
+            <div className={styles.queue__state__counter}>{ customers?.length }</div>
             <div
               className={styles.queue__state__add}
               onClick={() => setShowModal(true)}
@@ -308,7 +278,8 @@ function HomePage() {
           }
           className={styles.tableBlock}
         >
-          <div
+          { customers?.map((item:any, index: number) => (
+            <div
             className={`${styles.tbody__item__talon}`}
             style={
               index % 2 === 1
@@ -339,24 +310,20 @@ function HomePage() {
                     : undefined
                 }
               ></span>
-              {' Б201 '}
+              
               {item.ticket_number}
             </div>
             <div className={styles.tbody__question}>
               {item.queue}
-              {'Оформление кредита'}
+              
             </div>
             <div className={`${styles.tbody__state}`}>
-              {item.queue}
               {'Ожидает'}
             </div>
             <div className={styles.tbody__time}>
               {convertTime(item.waiting_time)}
             </div>
             <div className={styles.tbody__buttons}>
-              <div className={styles.switch}>
-                <img src={SwitchSVG} className={styles.switchIcon} />
-              </div>
               <img
                 src={Dots}
                 className={styles.tripledots}
@@ -373,7 +340,6 @@ function HomePage() {
                 >
                   Посмотреть талон
                 </button>
-                <button>Перенести в другую очередь</button>
                 <button
                   style={{
                     color: 'red',
@@ -402,6 +368,7 @@ function HomePage() {
               </div>
             )}
           </div>
+          )) }
         </div>
         {showModal && (
           <div className={styles.modal}>

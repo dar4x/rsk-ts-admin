@@ -5,6 +5,7 @@ import React, {
   useContext,
   useReducer,
 } from 'react';
+import $axios from 'src/utils/axios';
 import { ACTIONS, BASE_URL } from 'src/utils/const';
 
 interface QueueTypes {
@@ -25,6 +26,8 @@ const initState = {
   queue: [],
   oneQueue: null,
   rejectedQueue: [],
+  users: [],
+  customers: []
 };
 
 let newQueues = [];
@@ -35,6 +38,10 @@ function reducer(state: any, action: any) {
       return { ...state, queues: action.payload };
     case ACTIONS.rejectedQueue:
       return { ...state, rejectedQueue: action.payload };
+    case ACTIONS.users:
+      return { ...state, users: action.payload };
+    case ACTIONS.customers:
+      return { ...state, customers: action.payload };
     default:
       return state;
   }
@@ -45,7 +52,7 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
 
   async function getCustomers() {
     try {
-      const res = await axios.get(`${BASE_URL}/customers/`);
+      const res = await $axios.get(`${BASE_URL}/queues/`);
       dispatch({
         type: ACTIONS.queues,
         payload: res.data.results,
@@ -64,45 +71,42 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
     }
   }
 
-  async function rejectQueue(id: number, newItem: boolean) {
+  
+
+  const getActiveUsers = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/customers/${id}`);
-      const res2 = await axios.patch(`${BASE_URL}/customers/${id}/`, {
-        ...res.data,
-        is_served: newItem,
-        queue: 1,
-      });
+      const res = await $axios.get(`${BASE_URL}/admins/users/`);
       dispatch({
-        type: ACTIONS.rejectedQueue,
-        payload: res2,
-      });
-      console.log(res2.data);
-      getCustomers();
+        type: ACTIONS.users,
+        payload: res.data.results
+      })
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) {
-      return;
+
+  const getAllCustomers = async () => {
+    try {
+      const res = await $axios.get(`${BASE_URL}/customers/`);
+      dispatch({
+        type: ACTIONS.customers,
+        payload: res.data.results
+      })
+    } catch (error) {
+      console.log(error)
     }
-
-    const { source, destination } = result;
-    newQueues = [...state.queues];
-    const [movedItem] = newQueues.splice(source.index, 1);
-    newQueues.splice(destination.index, 0, movedItem);
-
-    dispatch({ type: ACTIONS.queues, payload: newQueues });
-  };
+  }
+  
 
   const value = {
     getCustomers,
     queues: state.queues,
     deleteQueue,
-    rejectQueue,
-    rejectedQueue: state.rejectedQueue,
-    handleDragEnd,
+    getActiveUsers,
+    users: state.users,
+    getAllCustomers,
+    customers: state.customers
   };
 
   return (

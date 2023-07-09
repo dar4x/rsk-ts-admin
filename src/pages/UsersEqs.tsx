@@ -1,12 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Users.module.scss';
 import GalaAdd from '../assets/images/gala_add.svg';
 import Edit from '../assets/images/fluent_edit-20-regular.svg';
 import Remove from '../assets/images/ep_remove.svg';
+import { useQueueContext } from 'src/context/QueueContext';
 
 function UsersEqs() {
   let index = '';
   let item = '';
+
+  const { getActiveUsers, users } =
+    useQueueContext();
+
+  useEffect(() => {
+    getActiveUsers();
+  }, []);
+
+  const [editStates, setEditStates] = useState(users.map(() => false));
+
+  const handleEditClick = (index: number) => {
+    const newEditStates = [...editStates];
+    newEditStates[index] = true;
+    setEditStates(newEditStates);
+  };
+
+  const handleSaveClick = (index: number) => {
+    const newEditStates = [...editStates];
+    newEditStates[index] = false;
+    setEditStates(newEditStates);
+  };
+
 
   return (
     <div className={styles.hero}>
@@ -32,30 +55,40 @@ function UsersEqs() {
               </div>
 
               <div>
-                <div className={`${styles.tbody__item__talon}`}>
-                  <div className={styles.tbody__talon}>
-                    <div className={styles.tbody__name}>{index + 1}.</div>
-                    {'Аманова Роза Калыбова'}
-                    {/* {item.ticket_number} */}
-                  </div>
-                  <div className={styles.tbody__question}>
-                    {/* {item.queue} */}
-                    {'Главный менеджер'}
-                  </div>
-                  <div className={styles.tbody__window}>{'Окно 5'}</div>
-                  <div className={styles.tbody__buttons}>
-                    <div className={styles.switch}>
-                      <img src={Edit} className={styles.switchIcon} />
+                { users?.map((item: any, index: number) => (
+                  <>
+                    <div className={`${styles.tbody__item__talon}`} key={item.id} >
+                    <div className={styles.tbody__talon}>
+                      <div className={styles.tbody__name} style={{ width: "40px", display: "flex", gap: "33px" }}>{index + 1}.</div>
+                      {item.username}
                     </div>
-                    <img
-                      src={Remove}
-                      className={styles.tripledots}
-                      // onClick={() =>
-                      //   handleOptionsClick(item.id, item.ticket_number)
-                      // }
-                    />
+                    <div className={styles.tbody__question}>
+                      {'Главный менеджер'}
+                    </div>
+                    <div className={styles.tbody__window}>{'Окно 5'}</div>
+                    <div className={styles.tbody__buttons}>
+                      <div className={styles.edit} onClick={() => handleEditClick(index)} >
+                        <img src={Edit} className={styles.editIcon} />
+                      </div>
+                      <img
+                        src={Remove}
+                        className={styles.tripledots}
+                        // onClick={() =>
+                        //   handleOptionsClick(item.id, item.ticket_number)
+                        // }
+                      />
+                    </div>
                   </div>
-                </div>
+                  { editStates[index] && (
+                    <form className={styles.editForm} >
+                      <input type="text" placeholder='Введите ФИО' className={styles.fio}/>
+                      <input type="text" placeholder='Введите должность' className={styles.job}/>
+                      <input type="text" placeholder='Введите номер окна' className={styles.window}/>
+                      <button onClick={() => handleSaveClick(index)} className={styles.btn_f} >Сохранить</button>
+                    </form>
+                  ) }
+                  </>
+                )) }
               </div>
             </div>
           </div>

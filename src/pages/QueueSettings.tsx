@@ -1,18 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './QueueSettingns.module.scss';
 import GalaAdd from '../assets/images/gala_add.svg';
 import Edit from '../assets/images/fluent_edit-20-regular.svg';
 import Remove from '../assets/images/ep_remove.svg';
+import { useQueueContext } from 'src/context/QueueContext';
 
 function QueueSettings() {
   let index = '';
   let item = '';
 
-  const convertTime = (timeInMinutes: number) => {
-    const hours = Math.floor(timeInMinutes / 60);
-    const minutes = timeInMinutes % 60;
-    return `${hours}ч ${minutes}мин`;
+  const { getCustomers, queues } =
+    useQueueContext();
+
+  useEffect(() => {
+    getCustomers();
+  }, []);
+
+  const calculateTimeDifference = (start: string, end: string): string => {
+    const startTime = new Date(`2000-01-01 ${start}`);
+    const endTime = new Date(`2000-01-01 ${end}`);
+
+    const differenceInMilliseconds = endTime.getTime() - startTime.getTime();
+    const hours = Math.floor(differenceInMilliseconds / (1000 * 60 * 60));
+    const minutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((differenceInMilliseconds % (1000 * 60)) / 1000);
+
+    return `${hours}:${minutes}:${seconds}`;
   };
+
+
+  console.log(queues)
 
   return (
     <div className={styles.hero}>
@@ -37,32 +54,34 @@ function QueueSettings() {
                 <div className={styles.thead__window}>Время обслуживания</div>
               </div>
 
-              <div>
-                <div className={`${styles.tbody__item__talon}`}>
-                  <div className={styles.tbody__talon}>
-                    <div className={styles.tbody__name}>{index + 1}.</div>
-                    {'Обслуживание кредитов'}
-                    {/* {item.ticket_number} */}
-                  </div>
-                  <div className={styles.tbody__question}>
-                    {/* {item.queue} */}
-                    {'Кредитные операции'}
-                  </div>
-                  <div className={styles.tbody__window}>{'Окно 5'}</div>
-                  <div className={styles.tbody__buttons}>
-                    <div className={styles.switch}>
-                      <img src={Edit} className={styles.switchIcon} />
+              { queues?.map((item: any, index: number) => (
+                <div>
+                  <div className={`${styles.tbody__item__talon}`}>
+                    <div className={styles.tbody__talon}>
+                      <div className={styles.tbody__name}>{index + 1}.</div>
+                      
+                      {item.name}
                     </div>
-                    <img
-                      src={Remove}
-                      className={styles.tripledots}
-                      // onClick={() =>
-                      //   handleOptionsClick(item.id, item.ticket_number)
-                      // }
-                    />
+                    <div className={styles.tbody__question}>
+                      {/* {item.queue} */}
+                      {'Кредитные операции'}
+                    </div>
+                    <div className={styles.tbody__window}>{calculateTimeDifference(item.print_start, item.print_end)}</div>
+                    <div className={styles.tbody__buttons}>
+                      <div className={styles.switch}>
+                        <img src={Edit} className={styles.switchIcon} />
+                      </div>
+                      <img
+                        src={Remove}
+                        className={styles.tripledots}
+                        // onClick={() =>
+                        //   handleOptionsClick(item.id, item.ticket_number)
+                        // }
+                      />
+                    </div>
                   </div>
-                </div>
               </div>
+              )) }
             </div>
           </div>
         </div>

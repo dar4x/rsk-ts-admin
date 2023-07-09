@@ -47,61 +47,32 @@ export const AuthPage: React.FC = () => {
             <div className={styles.logo__title}>
               Система электронных очередей
             </div>
-            <form className={styles.auth__form} /*onSubmit={handleSubmit}*/>
+            <form className={styles.auth__form} onSubmit={handleSubmit}>
               <input
                 type="text"
                 className={styles.auth__form__email}
                 name="username"
+                placeholder='Username'
                 onChange={(e) => {
                   e.target.value !== ''
                     ? setLabelEmailState(true)
                     : setLabelEmailState(false);
                 }}
               />
-              <label
-                className={`${styles.auth__form__email__placeholder} ${
-                  labelEmailState ? `${styles.active__email}` : ''
-                }`}
-              >
-                Введите имя пользователя
-              </label>
+              
               {/* {!isLogin ? (<></>):null} */}
-              <input
-                type="text"
-                className={styles.auth__form__email__real}
-                name="email"
-                onChange={(e) => {
-                  e.target.value !== ''
-                    ? setEmailState(true)
-                    : setEmailState(false);
-                }}
-              />
-              <label
-                className={`${styles.auth__form__email__placeholder__real} ${
-                  emailState ? `${styles.active__email__real}` : ''
-                }`}
-              >
-                Введите электронный адрес
-              </label>
 
               <input
                 type={inputType}
                 className={styles.auth__form__password}
                 name="password"
+                placeholder='Password'
                 onChange={(e) => {
                   e.target.value !== ''
                     ? setLabelPasswordState(true)
                     : setLabelPasswordState(false);
                 }}
               />
-
-              <label
-                className={`${styles.auth__form__password__placeholder} ${
-                  labelPasswordState ? `${styles.active__password}` : ''
-                }`}
-              >
-                Введите пароль
-              </label>
               {eyeState ? (
                 <div
                   className={styles.eye}
@@ -124,13 +95,13 @@ export const AuthPage: React.FC = () => {
                 </div>
               )}
               <div className={styles.block__of__a}>
-                <Link
+                {/* <Link
                   to={'/auth'}
                   className={styles.forgot__password__second}
                   onClick={(e) => setIsLogin(!isLogin)}
                 >
                   {isLogin ? 'Зарегистрироваться' : 'Уже есть аккаунт?'}
-                </Link>
+                </Link> */}
                 <Link to={'/auth'} className={styles.forgot__password}>
                   Забыли пароль?
                 </Link>

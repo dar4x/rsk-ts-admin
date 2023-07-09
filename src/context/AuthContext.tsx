@@ -54,13 +54,13 @@ function AuthContext({ children }: { children: React.ReactNode }) {
 
   async function login(credentials: any): Promise<void> {
     try {
-      const { data: tokens } = await axios.post(
+      const { data: tokens } = await $axios.post(
         `${BASE_URL}/login/jwt/create/`,
         credentials
       );
       localStorage.setItem('tokens', JSON.stringify(tokens));
 
-      const { data } = await $axios.get(`${BASE_URL}/user/profile/`);
+      const { data } = await $axios.get(`${BASE_URL}/profile/`);
 
       dispatch({
         type: ACTIONS.user,

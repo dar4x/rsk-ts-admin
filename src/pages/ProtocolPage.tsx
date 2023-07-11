@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Protocol.module.scss';
 import ArrowRight from '../assets/images/chevron-forward-outline.svg';
 import GalaAdd from '../assets/images/gala_add.svg';
@@ -10,13 +10,24 @@ import Dropdown from 'src/components/modals/dropmenu/DropMenu';
 import { Link } from 'react-router-dom';
 import { IDropPage } from 'src/common/types/dropdown';
 import classNames from 'classnames';
+import { useQueueContext } from 'src/context/QueueContext';
 
 function ProtocolPage() {
+
+  const { operatorActions, getOperatorActions, getTalonActions, talonActions } =
+    useQueueContext();
+
+  useEffect(() => {
+    getOperatorActions();
+    getTalonActions();
+  }, []);
+
+  console.log(operatorActions)
+
   const [opContentVisible, setOpContentVisible] = useState(false);
   const [tickContentVisible, setTickContentVisible] = useState(false);
 
   const [content1, setContent1] = useState(false);
-  const [content2, setContent2] = useState(false);
 
   const [showOptions, setShowOptions] = useState(false);
   const [showTable, setShowTable] = useState(false);
@@ -54,6 +65,15 @@ function ProtocolPage() {
     return `${hours}: ${minutes}`;
   };
 
+  function convertCreatedAtToHours(created_at: string) {
+    const date = new Date(created_at);
+  
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+  
+    return `${hours}:${minutes}`;
+  }  
+
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
 
   const handleToggleDropDown = () => {
@@ -83,6 +103,8 @@ function ProtocolPage() {
       link: '',
     },
   ];
+
+  console.log(talonActions)
 
   return (
     <div className={styles.hero}>
@@ -129,10 +151,10 @@ function ProtocolPage() {
                   content1 ? `${styles.reverseArrow}` : ``
                 }`}
               />
-              Вход/выход операторов
+              Действия операторов
             </div>
             <div className={styles.circles}>
-              <div className={styles.queue__state__counter}>8</div>
+              <div className={styles.queue__state__counter}>{ operatorActions?.length }</div>
               <div className={styles.queue__state__add}>
                 <img src={GalaAdd} alt="" />
               </div>
@@ -159,8 +181,9 @@ function ProtocolPage() {
                     <div className={styles.thead__post}>Оператор</div>
                     <div className={styles.thead__window}>Действия </div>
                   </div>
-                  {/* {queues?.map((item: any, index: number) => ( */}
+                  {operatorActions?.reverse().map((item: any, index: number) => (
                   <div
+                  key={item.id}
                     className={`${styles.tbody__item__talon}`}
                     style={
                       index % 2 === 1
@@ -170,16 +193,15 @@ function ProtocolPage() {
                   >
                     <div className={styles.tbody__time}>
                       <div className={styles.tbody__number}>{index + 1}.</div>
-                      {convertTime(item.waiting_time)}
+                      {convertCreatedAtToHours(item.created_at)}
 
                       {item.ticket_number}
                     </div>
                     <div className={styles.tbody__operator}>
-                      {item.queue}
-                      {'Оператор 1'}
+                      {`Оператор ${item.operator}`}
                     </div>
                     <div className={styles.tbody__actions}>
-                      {'вошел в систему'}
+                      { item.event }
                     </div>
                     <div className={styles.tbody__buttons}>
                       <img
@@ -200,89 +222,7 @@ function ProtocolPage() {
                       />
                     </div>
                   </div>
-                  {/* ))} */}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            onClick={(e) => setContent2(!content2)}
-            className={styles.queue__state}
-          >
-            <div className={styles.queue__state__title}>
-              <img
-                src={ArrowRight}
-                className={`${styles.arrowRight} ${
-                  content2 ? `${styles.reverseArrow}` : ``
-                }`}
-              />
-              Вход/выход операторов
-            </div>
-            <div className={styles.circles}>
-              <div className={styles.queue__state__counter}>8</div>
-              <div className={styles.queue__state__add}>
-                <img src={GalaAdd} alt="" />
-              </div>
-            </div>
-          </div>
-          <div
-            style={
-              content2
-                ? { maxHeight: '100%', display: 'block' }
-                : { maxHeight: '0px', display: 'none' }
-            }
-            className={styles.tableBlock}
-          >
-            <div className={styles.table}>
-              <div className={styles.tableItems}>
-                <div className={styles.tableItem__tbody}>
-                  <div className={styles.tableItem__thead}>
-                    <div className={styles.thead__name}>Время</div>
-                    <div className={styles.thead__post}>Оператор</div>
-                    <div className={styles.thead__window}>Действия </div>
-                  </div>
-                  {/* {queues?.map((item: any, index: number) => ( */}
-                  <div
-                    className={`${styles.tbody__item__talon}`}
-                    style={
-                      index % 2 === 1
-                        ? { background: 'rgba(248, 248, 248, 1)' }
-                        : undefined
-                    }
-                  >
-                    <div className={styles.tbody__time}>
-                      <div className={styles.tbody__number}>{index + 1}.</div>
-                      {convertTime(item.waiting_time)}
-
-                      {item.ticket_number}
-                    </div>
-                    <div className={styles.tbody__operator}>
-                      {item.queue}
-                      {'Оператор 1'}
-                    </div>
-                    <div className={styles.tbody__actions}>
-                      {'принял талон №A001.'}
-                    </div>
-                    <div className={styles.tbody__buttons}>
-                      <img
-                        src={Eye}
-                        className={styles.tripledots}
-                        onClick={() =>
-                          handleOptionsClick(item.id, item.ticket_number)
-                        }
-                      />
-
-                      <img
-                        src={Remove}
-                        className={styles.tripledots}
-                        onClick={() => {
-                          handleOptionsClick(item.id, item.ticket_number);
-                          setShowModal(true);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  {/* ))} */}
+                  ))}
                 </div>
               </div>
             </div>
@@ -341,8 +281,9 @@ function ProtocolPage() {
                 <div className={styles.thead__window}>Действия </div>
                 <div className={styles.thead__post}>Особенности</div>
               </div>
-              {/* {queues?.map((item: any, index: number) => ( */}
+              {talonActions?.map((item: any, index: number) => (
               <div
+                key={item.id}
                 className={`${styles.tbody__item__talon}`}
                 style={
                   index % 2 === 1
@@ -354,12 +295,12 @@ function ProtocolPage() {
                   <div className={styles.tbody__number}>{index + 1}.</div>
                   {convertTime(item.waiting_time)}
 
-                  {item.ticket_number}
+                  
                 </div>
                 <div className={styles.tbody__actions}>
-                  {'Создан новый талон №A001'}
+                  {`Создан новый талон №${item?.ticket_number}`}
                 </div>
-                <div className={styles.tbody__operator}>{'Пенсионер'}</div>
+                <div className={styles.tbody__operator}>{ item?.category === 'regular' ? "-" : item?.category }</div>
                 <div className={styles.tbody__buttons}>
                   <img
                     src={Eye}
@@ -379,7 +320,7 @@ function ProtocolPage() {
                   />
                 </div>
               </div>
-              {/* ))} */}
+              ))} 
             </div>
           </div>
         </div>

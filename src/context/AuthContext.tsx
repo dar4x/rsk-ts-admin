@@ -59,6 +59,9 @@ function AuthContext({ children }: { children: React.ReactNode }) {
         credentials
       );
       localStorage.setItem('tokens', JSON.stringify(tokens));
+      console.log(tokens)
+      sessionStorage.setItem('access_token', tokens.access);
+      sessionStorage.setItem('refresh_token', tokens.refresh);
 
       const { data } = await $axios.get(`${BASE_URL}/profile/`);
 
@@ -66,6 +69,16 @@ function AuthContext({ children }: { children: React.ReactNode }) {
         type: ACTIONS.user,
         payload: data,
       });
+
+      if( state.user?.position === 'operator' ) {
+        try {
+          const res = await $axios.post(`${BASE_URL}/operator/`);
+          console.log(res);
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
     } catch (error) {
       console.log(error);
     }

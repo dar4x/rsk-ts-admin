@@ -23,9 +23,8 @@ function QueueSettings() {
     const differenceInMilliseconds = endTime.getTime() - startTime.getTime();
     const hours = Math.floor(differenceInMilliseconds / (1000 * 60 * 60));
     const minutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((differenceInMilliseconds % (1000 * 60)) / 1000);
 
-    return `${hours}:${minutes}:${seconds}`;
+    return `${hours}:${minutes === 0 ? "00" : ""}`;
   };
 
 

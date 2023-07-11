@@ -22,7 +22,7 @@
     "types": ["vite/client", "vitest"]
   },
   "files": [],
-  "include": [],
+  "include": ["./src/axios.d.ts"],
   "references": [
     {
       "path": "./tsconfig.app.json"

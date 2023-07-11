@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, {
   createContext,
   PropsWithChildren,
@@ -7,6 +6,7 @@ import React, {
 } from 'react';
 import $axios from 'src/utils/axios';
 import { ACTIONS, BASE_URL } from 'src/utils/const';
+
 
 interface QueueTypes {
   queues: object;
@@ -27,7 +27,9 @@ const initState = {
   oneQueue: null,
   rejectedQueue: [],
   users: [],
-  customers: []
+  customers: [],
+  operatorActions: [],
+  talonActions: []
 };
 
 let newQueues = [];
@@ -42,6 +44,10 @@ function reducer(state: any, action: any) {
       return { ...state, users: action.payload };
     case ACTIONS.customers:
       return { ...state, customers: action.payload };
+    case ACTIONS.operatorActions:
+      return { ...state, operatorActions: action.payload };
+    case ACTIONS.talonActions:
+      return { ...state, talonActions: action.payload };
     default:
       return state;
   }
@@ -64,10 +70,61 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
 
   async function deleteQueue(id: number) {
     try {
-      const res = await axios.delete(`${BASE_URL}/customers/${id}`);
-      getCustomers();
+      const res = await $axios.delete(`${BASE_URL}/customers/${id}`);
+      getAllCustomers();
     } catch (error) {
       console.log(error);
+    }
+  }
+
+
+  async function deleteMainQueue(id: number) {
+    try {
+      await $axios.delete(`${BASE_URL}/queues/${id}/`)
+      getCustomers()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function getOperatorActions() {
+    try {
+      const token = sessionStorage.getItem('access_token');
+      const res = await $axios.get(`http://35.184.55.194/admins/protocol/get_operator_actions/`, {
+        headers: {
+          "Authorization": `Token ${token}`
+        }
+      });
+      console.log(res)
+      dispatch({
+        type: ACTIONS.operatorActions,
+        payload: res.data
+      })
+    } catch (error) {
+      console.log(error) 
+    }
+  }
+
+  async function getTalonActions() {
+    try {
+      // const res = await $axios.get(`${BASE_URL}/admins/protocol/get_customer_actions/`);
+      // dispatch({
+      //   type: ACTIONS.talonActions,
+      //   payload: res.data
+      // })
+      const token = sessionStorage.getItem('access_token');
+      const res = await $axios.get(`${BASE_URL}/admins/protocol/get_customer_actions/`, {
+        headers: {
+          "Authorization": `Token ${token}`
+        }
+      })
+      console.log(res)
+      dispatch({
+        type: ACTIONS.talonActions,
+        payload: res.data
+      })
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -75,10 +132,11 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
 
   const getActiveUsers = async () => {
     try {
-      const res = await $axios.get(`${BASE_URL}/admins/users/`);
+      const res = await $axios.get(`${BASE_URL}/admins/get_online_operators/`);
+      console.log(res)
       dispatch({
         type: ACTIONS.users,
-        payload: res.data.results
+        payload: res.data
       })
     } catch (error) {
       console.log(error)
@@ -106,7 +164,12 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
     getActiveUsers,
     users: state.users,
     getAllCustomers,
-    customers: state.customers
+    customers: state.customers,
+    deleteMainQueue,
+    getOperatorActions,
+    operatorActions: state.operatorActions,
+    getTalonActions,
+    talonActions: state.talonActions
   };
 
   return (

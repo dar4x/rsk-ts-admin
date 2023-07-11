@@ -8,9 +8,11 @@ import GalaAdd from '../assets/images/gala_add.svg';
 import SwitchSVG from '../assets/images/Vecto3.svg';
 import { useQueueContext } from 'src/context/QueueContext';
 import TicketModal from 'src/components/modals/home-modals/TicketModal';
+import { useAuthContext } from 'src/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
-  const { getCustomers, queues, deleteQueue, getActiveUsers, users, customers, getAllCustomers } =
+  const { getCustomers, queues, deleteQueue, getActiveUsers, users, customers, getAllCustomers, deleteMainQueue } =
     useQueueContext();
 
   useEffect(() => {
@@ -18,6 +20,16 @@ function HomePage() {
     getActiveUsers();
     getAllCustomers()
   }, []);
+
+  const navigate = useNavigate();
+
+  const { user } = useAuthContext();
+
+  useEffect(() => {
+    if(user === null) {
+      navigate("/auth")
+    }
+  }, [user])
 
   console.log(customers)
   const [content1, setContent1] = useState(false);
@@ -28,6 +40,8 @@ function HomePage() {
   const [showOptions, setShowOptions] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
+  const [ queuesID, setQueuesID ] = useState(false);
 
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [selectedTicketNumber, setSelectedTicketNumber] = useState('');
@@ -64,6 +78,9 @@ function HomePage() {
   };
 
   const handleDeleteConfirm = () => {
+    if(selectedItemId) {
+      deleteQueue(selectedItemId)
+    }
     setShowModal(false);
   };
 
@@ -76,7 +93,6 @@ function HomePage() {
   let index = '';
   let item = '';
 
-  console.log(queues)
 
   return (
     <div className={styles.hero}>
@@ -140,7 +156,8 @@ function HomePage() {
                       className={styles.tripledots}
                       onClick={() => {
                         handleOptionsClick(item.id, item.ticket_number);
-                        setShowModal(true);
+                        setQueuesID(item.id);
+                        setShowModal2(true);
                       }}
                     />
                   </div>
@@ -214,10 +231,10 @@ function HomePage() {
                           : undefined
                       }
                     ></span>
-                    {` Окно ${index + 1}`}
+                    {` Окно ${item.window_number}`}
                   </div>
                   <div className={styles.tbody__question}>
-                    {item.username}
+                    {item.first_name}
                   </div>
                   <div className={styles.tbody__operat_state}>
                     {/* {convertTime(item.waiting_time)} */}
@@ -236,7 +253,7 @@ function HomePage() {
                       src={Remove}
                       className={styles.tripledots}
                       onClick={() => {
-                        handleOptionsClick(item.id, item.ticket_number);
+                        handleOptionsClick(item.id, item.ticket_number)
                         setShowModal(true);
                       }}
                     />
@@ -353,18 +370,6 @@ function HomePage() {
                 >
                   Удалить
                 </button>
-                <button
-                  style={{
-                    color: 'red',
-                    backgroundColor: '#f5f5f5',
-                    borderRadius: '5px',
-                  }}
-                  onClick={() => {
-                    setNewItem(false);
-                  }}
-                >
-                  Отклонить
-                </button>
               </div>
             )}
           </div>
@@ -388,6 +393,32 @@ function HomePage() {
                 </button>
                 <button
                   onClick={handleDeleteConfirm}
+                  className={styles.deleteBTN}
+                >
+                  Удалить
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {showModal2 && (
+          <div className={styles.modal}>
+            <div className={styles.modalContent}>
+              <p>
+                Вы действительно хотите удалить <br /> очередь{' '}
+                <span className={styles.modalSpan}>
+                  №{queuesID}
+                </span>
+              </p>
+              <div className={styles.modalButtons}>
+                <button
+                  onClick={() => setShowModal2(false)}
+                  className={styles.cancelBTN}
+                >
+                  Отмена
+                </button>
+                <button
+                  onClick={() => deleteMainQueue(queuesID)}
                   className={styles.deleteBTN}
                 >
                   Удалить

@@ -1,5 +1,6 @@
 export type User = {
   email: string;
+  position: any
 };
 
 export type AuthState = {

@@ -9,7 +9,11 @@ export const ACTIONS = {
   queues: 'queues',
   rejectedQueue: 'rejectedQueue',
   users: "users",
-  customers: "customers"
+  customers: "customers",
+  operatorActions: "operatorActions",
+  talonActions: "talonActions",
+  databases: "databases",
+  stat: "stat"
 } as const;
 
 export const TRANSITION = 150;

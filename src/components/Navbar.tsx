@@ -19,6 +19,7 @@ import './Hamburger.scss';
 import classNames from 'classnames';
 import Dropdown from './modals/dropmenu/DropMenu';
 import { IDropPage } from 'src/common/types/dropdown';
+import { useAuthContext } from 'src/context/AuthContext';
 
 const Navbar: React.FC = () => {
   const [switchState, setSwitchState] = React.useState(false);
@@ -30,6 +31,10 @@ const Navbar: React.FC = () => {
   };
 
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+
+  const { logout,user } = useAuthContext();
+
+  console.log(user)
 
   const handleToggleDropDown = () => {
     setIsDropDownOpen((prevState) => !prevState);
@@ -73,10 +78,9 @@ const Navbar: React.FC = () => {
       title: 'Статистика',
       link: '/admin/statistic',
     },
-
     {
       title: 'Выход',
-      link: '/',
+      link: '/auth',
     },
   ];
 
@@ -87,24 +91,6 @@ const Navbar: React.FC = () => {
           <div className={styles.header__nav__start}>
             <div className={styles.header_logo}>
               <img src={LogoSVG} alt="" />
-            </div>
-            <div className={styles.timeBreak}>
-              Перерыв
-              {switchState ? (
-                <img
-                  src={SwitchoffSVG}
-                  alt=""
-                  className={styles.switch}
-                  onClick={(e) => setSwitchState(!switchState)}
-                />
-              ) : (
-                <img
-                  src={SwitchonSVG}
-                  alt=""
-                  className={styles.switch}
-                  onClick={(e) => setSwitchState(!switchState)}
-                />
-              )}
             </div>
             <div className={styles.chat}>
               Рабочий чат
@@ -146,6 +132,7 @@ const Navbar: React.FC = () => {
                   <ul className={styles.drop__catalog} key={page.title}>
                     <Link to={page.link}>
                       <li
+                        onClick={() => logout()}
                         className={classNames(styles.drop__catalog__item, {
                           [styles.logout]: page.title === 'Выход',
                         })}

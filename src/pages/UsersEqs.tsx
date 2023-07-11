@@ -39,7 +39,7 @@ function UsersEqs() {
             Количество активных очередей
           </div>
           <div className={styles.circles}>
-            <div className={styles.queue__state__counter}>8</div>
+            <div className={styles.queue__state__counter}>{ users?.length }</div>
             <div className={styles.queue__state__add}>
               <img src={GalaAdd} alt="" />
             </div>

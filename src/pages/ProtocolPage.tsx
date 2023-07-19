@@ -56,9 +56,6 @@ function ProtocolPage() {
     setShowTicketModal(false);
   };
 
-  let item = '';
-  let index = '';
-
   const convertTime = (timeInMinutes: number) => {
     const hours = Math.floor(timeInMinutes / 60);
     const minutes = timeInMinutes % 60;
@@ -111,9 +108,7 @@ function ProtocolPage() {
       <div className={styles.content}>
         <div className={styles.links}>
           <button
-            className={`${styles.btn} ${
-              opContentVisible ? styles.btn__active : ''
-            }`}
+            className={`${styles.btn}`}
             onClick={() => {
               setOpContentVisible(true);
               setTickContentVisible(false);
@@ -122,9 +117,7 @@ function ProtocolPage() {
             Протоколы по операторам
           </button>
           <button
-            className={`${styles.btn} ${
-              !opContentVisible ? styles.btn__active : ''
-            }`}
+            className={`${styles.btn}`}
             onClick={() => {
               setOpContentVisible(false);
               setTickContentVisible(true);
@@ -223,6 +216,9 @@ function ProtocolPage() {
                     </div>
                   </div>
                   ))}
+                  { operatorActions?.length === 0 && (
+                    <div className={styles.actionsIsZero} >Действия операторов не наблюдается</div>
+                  ) }
                 </div>
               </div>
             </div>

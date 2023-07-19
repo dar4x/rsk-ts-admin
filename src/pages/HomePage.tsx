@@ -138,9 +138,9 @@ function HomePage() {
                   }
                   key={item.id}
                 >
-                  <div className={styles.tbody__talon} style={{ width: "300px" }}>
+                  <div className={styles.tbody__talon} style={{ width: "330px" }}>
                     <div className={styles.tbody__number}>{index + 1}.</div>
-                    {item.name}
+                    <div className={styles.tbody_name}>{item.name}</div>
                   </div>
                   <div className={styles.tbody__buttons}>
                     <img

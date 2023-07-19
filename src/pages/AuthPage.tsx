@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import Rsk_Logo from '../assets/images/RSK_Bank_Logo.svg';
 import Eye_Off from '/src/assets/images/eye-off-outline.svg';
@@ -12,8 +12,9 @@ export const AuthPage: React.FC = () => {
   const [eyeState, setEyeState] = React.useState(false);
   const [inputType, setInputType] = React.useState('password');
   const [labelEmailState, setLabelEmailState] = React.useState(false);
-  const [emailState, setEmailState] = React.useState(false);
   const [labelPasswordState, setLabelPasswordState] = React.useState(false);
+
+  const [ isSubmit, setIsSubmit ] = useState(false);
 
   const [isLogin, setIsLogin] = React.useState(true);
   const { register, login, user } = useAuthContext();
@@ -50,7 +51,7 @@ export const AuthPage: React.FC = () => {
             <form className={styles.auth__form} onSubmit={handleSubmit}>
               <input
                 type="text"
-                className={styles.auth__form__email}
+                className={`${styles.auth__form__email} ${ isSubmit ? `${styles.submited}` : "" }`}
                 name="username"
                 placeholder='Username'
                 onChange={(e) => {
@@ -64,7 +65,7 @@ export const AuthPage: React.FC = () => {
 
               <input
                 type={inputType}
-                className={styles.auth__form__password}
+                className={`${styles.auth__form__password} ${ isSubmit ? `${styles.submited}` : "" }`}
                 name="password"
                 placeholder='Password'
                 onChange={(e) => {
@@ -106,9 +107,15 @@ export const AuthPage: React.FC = () => {
                   Забыли пароль?
                 </Link>
               </div>
-              <button className={styles.auth__form__btn}>
+              <button onClick={() => setIsSubmit(true)} className={`${styles.auth__form__btn} ${ isSubmit ? `${styles.clicked}` : "" } `}>
                 {isLogin ? 'Войти' : 'Регистрация'}
               </button>
+              { isSubmit ? (
+                <>
+                  <div className={styles.jumping_dots_loader}> <span></span> <span></span> <span></span> </div>
+                  <div className={styles.moving_gradient}></div>
+                </>
+              ) : (null) }
             </form>
           </div>
         </div>

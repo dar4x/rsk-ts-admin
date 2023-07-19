@@ -111,14 +111,26 @@
 
 .tbody__talon {
   display: flex;
-  width: 150px;
-  justify-content: space-between;
+  width: 300px;
+  justify-content: flex-start;
   align-items: center;
   color: #0174b1;
   font-size: 28px;
   font-family: Montserrat;
   font-weight: 600;
   // gap: 10px;
+}
+
+.tbody_name {
+  display: flex;
+  width: 300px;
+  justify-content: flex-start;
+  align-items: center;
+  color: #0174b1;
+  font-size: 28px;
+  font-family: Montserrat;
+  font-weight: 600;
+  margin-left: 15px;
 }
 
 .tbody__number {

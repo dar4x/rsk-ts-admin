@@ -57,24 +57,22 @@
 
 .tableItem__thead {
   display: flex;
-  justify-content: space-around;
-  width: 1080px;
+  width: 100%;
   height: auto;
   color: #0174b1;
   font-size: 22px;
   font-family: Montserrat;
   font-weight: 700;
+  justify-content: space-between;
   // margin-left: 35px;
 }
 
 .thead__name {
-  margin-left: 80px;
   color: rgba(1, 116, 177, 1);
   font-weight: 500;
 }
 
 .thead__post {
-  margin-left: 150px;
   color: rgba(1, 116, 177, 1);
   font-weight: 500;
 }

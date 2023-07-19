@@ -107,11 +107,6 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
 
   async function getTalonActions() {
     try {
-      // const res = await $axios.get(`${BASE_URL}/admins/protocol/get_customer_actions/`);
-      // dispatch({
-      //   type: ACTIONS.talonActions,
-      //   payload: res.data
-      // })
       const token = sessionStorage.getItem('access_token');
       const res = await $axios.get(`${BASE_URL}/admins/protocol/get_customer_actions/`, {
         headers: {
@@ -147,9 +142,10 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
   const getAllCustomers = async () => {
     try {
       const res = await $axios.get(`${BASE_URL}/customers/`);
+      const filteredCustomers = res.data.results.filter((customer: any) => customer.is_served === null);
       dispatch({
         type: ACTIONS.customers,
-        payload: res.data.results
+        payload: filteredCustomers
       })
     } catch (error) {
       console.log(error)

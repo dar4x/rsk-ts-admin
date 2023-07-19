@@ -34,7 +34,7 @@
   transition: 0.2s;
 }
 
-.btn__active {
+.btn:hover{
   background-color: rgba(1, 116, 177, 1);
   color: #fff;
 }
@@ -313,4 +313,13 @@
 .drop__catalog__item:hover {
   color: #ffffff;
   background: rgba(57, 147, 195, 1);
+}
+
+.actionsIsZero{
+  margin-top: 40px;
+  font-size: 40px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

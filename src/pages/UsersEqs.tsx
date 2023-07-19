@@ -31,6 +31,8 @@ function UsersEqs() {
   };
 
 
+  console.log(users)
+
   return (
     <div className={styles.hero}>
       <div className={styles.content}>
@@ -60,13 +62,13 @@ function UsersEqs() {
                     <div className={`${styles.tbody__item__talon}`} key={item.id} >
                     <div className={styles.tbody__talon}>
                       <div className={styles.tbody__name} style={{ width: "40px", display: "flex", gap: "33px" }}>{index + 1}.</div>
-                      {item.username}
+                      {item.first_name}
                     </div>
                     <div className={styles.tbody__question}>
-                      {'Главный менеджер'}
+                      { item.position === "operator" ? "Оператор" : item.position }
                     </div>
-                    <div className={styles.tbody__window}>{'Окно 5'}</div>
-                    <div className={styles.tbody__buttons}>
+                    <div className={styles.tbody__window}>Окно №{ item.window_number }</div>
+                    {/* <div className={styles.tbody__buttons}>
                       <div className={styles.edit} onClick={() => handleEditClick(index)} >
                         <img src={Edit} className={styles.editIcon} />
                       </div>
@@ -77,7 +79,7 @@ function UsersEqs() {
                         //   handleOptionsClick(item.id, item.ticket_number)
                         // }
                       />
-                    </div>
+                    </div> */}
                   </div>
                   { editStates[index] && (
                     <form className={styles.editForm} >

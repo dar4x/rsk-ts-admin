@@ -12,7 +12,7 @@ import { useAuthContext } from 'src/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
-  const { getCustomers, queues, deleteQueue, getActiveUsers, users, customers, getAllCustomers, deleteMainQueue } =
+  const { getCustomers, queues, deleteQueue, getActiveUsers, users, customers, getAllCustomers, deleteMainQueue, addQueue } =
     useQueueContext();
 
   useEffect(() => {
@@ -31,7 +31,6 @@ function HomePage() {
     }
   }, [user])
 
-  console.log(customers)
   const [content1, setContent1] = useState(false);
   const [content2, setContent2] = useState(false);
   const [content3, setContent3] = useState(false);
@@ -41,6 +40,7 @@ function HomePage() {
   const [showTable, setShowTable] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
   const [ queuesID, setQueuesID ] = useState(false);
 
   const [selectedItemId, setSelectedItemId] = useState(null);
@@ -49,16 +49,15 @@ function HomePage() {
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
 
-  const [newItem, setNewItem] = useState(false);
-
-  interface currentITEMType {
-    id: number;
-    ticket_number: string;
-    queue: string;
-    waiting_time: number;
-    category: string;
-    position: number;
-  }
+  // Для формочки добавление очереди 
+  const [ nameInput, setNameInput ] = useState("")
+  const [ desInput, setDesInput ] = useState("")
+  const [ symInput, setSymInput ] = useState("")
+  const [ serInput, setSerInput ] = useState("")
+  const [ operInput, setOperInput ] = useState("")
+  const [ docsInput, setDocsInput ] = useState("")
+  const [ opDocsInput, setOpDocsInput ] = useState("")
+ // Конец State для добавление очереди
 
   const handleOptionsClick = (itemId: any, ticketNumber: any) => {
     setSelectedItemId(itemId);
@@ -90,9 +89,21 @@ function HomePage() {
     return `${hours}ч ${minutes}мин`;
   };
 
-  let index = '';
-  let item = '';
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    if(!nameInput.trim() || !desInput.trim || !symInput.trim()) {
+      alert("Заполните обязательные поля")
+    }
+     // Приводим serInput и operInput к числовому типу
+    const parsedSerInput = parseInt(serInput, 10); // Парсим строку в число
+    const parsedOperInput = parseInt(operInput, 10); // Парсим строку в число
+    console.log(typeof parsedOperInput, typeof parsedSerInput)
+    addQueue(nameInput, desInput, symInput, serInput, [operInput]);
+    console.log("Добавлено!");
+    setShowModal3(false)
+  }
 
+  console.log(users)
 
   return (
     <div className={styles.hero}>
@@ -112,7 +123,7 @@ function HomePage() {
           </div>
           <div className={styles.circles}>
             <div className={styles.queue__state__counter}>{ queues?.length }</div>
-            <div className={styles.queue__state__add}>
+            <div className={styles.queue__state__add} onClick={() => setShowModal3(true)} >
               <img src={GalaAdd} alt="" />
             </div>
           </div>
@@ -376,8 +387,8 @@ function HomePage() {
           )) }
         </div>
         {showModal && (
-          <div className={styles.modal}>
-            <div className={styles.modalContent}>
+          <div className={styles.modal2}>
+            <div className={styles.modalContent2}>
               <p>
                 Вы действительно хотите удалить <br /> очередь{' '}
                 <span className={styles.modalSpan}>
@@ -402,8 +413,8 @@ function HomePage() {
           </div>
         )}
         {showModal2 && (
-          <div className={styles.modal}>
-            <div className={styles.modalContent}>
+          <div className={styles.modal2}>
+            <div className={styles.modalContent2}>
               <p>
                 Вы действительно хотите удалить <br /> очередь{' '}
                 <span className={styles.modalSpan}>
@@ -418,12 +429,46 @@ function HomePage() {
                   Отмена
                 </button>
                 <button
-                  onClick={() => deleteMainQueue(queuesID)}
+                  onClick={() => {
+                    deleteMainQueue(queuesID)
+                    setShowModal2(false)
+                  }}
                   className={styles.deleteBTN}
                 >
                   Удалить
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+        {showModal3 && (
+          <div className={styles.modal2}>
+            <div className={styles.modalContent2}>
+              
+              <p>
+                Добавление очереди
+              </p>
+              <form className={styles.formAdd} onSubmit={(e) => handleSubmit(e)} >
+                <input type="text" className={styles.name} placeholder='Название *' value={nameInput} onChange={(e) => setNameInput(e.target.value)} />
+                <input type="text" className={styles.description} placeholder='Описание *' value={desInput} onChange={(e) => setDesInput(e.target.value)} />
+                <input type="text" className={styles.symbol} placeholder='Символ *' maxLength={2} value={symInput} onChange={(e) => setSymInput(e.target.value.toUpperCase())} />
+                <select className={styles.services} value={serInput} onChange={(e) => setSerInput(e.target.value)}>
+                  <option value={1} >Физическое лицо</option>
+                  <option value={2}>Юридическое лицо</option>
+                  <option value={3}>Платежные карты</option>
+                </select>
+                <select className={styles.operator} value={operInput} onChange={(e) => setOperInput(e.target.value)}>
+                {users.map((item: any) => (
+                  <option key={item.id} value={item.profile_pk}>
+                    Оператор {item.first_name}
+                  </option>
+                ))}
+                </select>
+                <input type="text" className={styles.docs} placeholder='Обязательные документы' value={docsInput} onChange={(e) => setDocsInput(e.target.value)} />
+                <input type="text" className={styles.optional_documents} placeholder='Необязательные документы' value={opDocsInput} onChange={(e) => setOpDocsInput(e.target.value)} />
+                <button>Добавить</button>
+                <button className={styles.cancel} onClick={() => setShowModal3(false)}>Отмена</button>
+              </form>
             </div>
           </div>
         )}

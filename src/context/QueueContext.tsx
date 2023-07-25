@@ -151,6 +151,23 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
       console.log(error)
     }
   }
+
+  const addQueue = async (name: string, description: string, symbol: string, services: number, operator: number[]) => {
+    try {
+      const data = {
+        name: name,
+        description: description,
+        symbol: symbol,
+        services: services,
+        operator: operator
+      }
+      const res = await $axios.post(`${BASE_URL}/queues/`, data);
+      console.log(res.data);
+      getCustomers()
+    } catch (error) {
+        console.log(error)
+    }
+  }
   
 
   const value = {
@@ -165,7 +182,8 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
     getOperatorActions,
     operatorActions: state.operatorActions,
     getTalonActions,
-    talonActions: state.talonActions
+    talonActions: state.talonActions,
+    addQueue
   };
 
   return (

@@ -56,11 +56,25 @@ function ProtocolPage() {
     setShowTicketModal(false);
   };
 
-  const convertTime = (timeInMinutes: number) => {
-    const hours = Math.floor(timeInMinutes / 60);
-    const minutes = timeInMinutes % 60;
-    return `${hours}: ${minutes}`;
-  };
+  function formatDate(dateString: string): string {
+    const date = new Date(dateString);
+  
+    const day = date.getDate();
+    const monthIndex = date.getMonth();
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+  
+    // Массив с названиями месяцев на русском
+    const monthNames = [
+      "января", "февраля", "марта", "апреля", "мая", "июня",
+      "июля", "августа", "сентября", "октября", "ноября", "декабря"
+    ];
+  
+    const formattedDate = `${day} ${monthNames[monthIndex]} ${year}, ${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+  
+    return formattedDate;
+  }  
 
   function convertCreatedAtToHours(created_at: string) {
     const date = new Date(created_at);
@@ -75,6 +89,26 @@ function ProtocolPage() {
 
   const handleToggleDropDown = () => {
     setIsDropDownOpen((prevState) => !prevState);
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Количество элементов на странице
+
+  // Вычисление индексов элементов для текущей страницы
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  // Отфильтрованный список талонов для текущей страницы
+  const currentTalonActions = talonActions?.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Функция для переключения на следующую страницу
+  const nextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  // Функция для переключения на предыдущую страницу
+  const prevPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
   };
 
   const dropPages: IDropPage[] = [
@@ -275,9 +309,8 @@ function ProtocolPage() {
               <div className={styles.tableItem__head}>
                 <div className={styles.thead__name}>Время</div>
                 <div className={styles.thead__window}>Действия </div>
-                <div className={styles.thead__post}>Особенности</div>
               </div>
-              {talonActions?.map((item: any, index: number) => (
+              {currentTalonActions?.map((item: any, index: number) => (
               <div
                 key={item.id}
                 className={`${styles.tbody__item__talon}`}
@@ -289,14 +322,11 @@ function ProtocolPage() {
               >
                 <div className={styles.tbody__time}>
                   <div className={styles.tbody__number}>{index + 1}.</div>
-                  {convertTime(item.waiting_time)}
-
-                  
+                  {formatDate(item.created_at)}
                 </div>
                 <div className={styles.tbody__actions}>
-                  {`Создан новый талон №${item?.ticket_number}`}
+                  {item.event}
                 </div>
-                <div className={styles.tbody__operator}>{ item?.category === 'regular' ? "-" : item?.category }</div>
                 <div className={styles.tbody__buttons}>
                   <img
                     src={Eye}
@@ -317,6 +347,17 @@ function ProtocolPage() {
                 </div>
               </div>
               ))} 
+              <div className={styles.pagination}>
+                <button disabled={currentPage === 1} onClick={prevPage}>
+                  Назад
+                </button>
+                <button
+                  disabled={indexOfLastItem >= (talonActions?.length || 0)}
+                  onClick={nextPage}
+                >
+                  Вперед
+                </button>
+              </div>
             </div>
           </div>
         </div>

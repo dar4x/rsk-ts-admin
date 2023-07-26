@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import { IDropPage } from 'src/common/types/dropdown';
 import classNames from 'classnames';
 import { useQueueContext } from 'src/context/QueueContext';
+import { useAuthContext } from 'src/context/AuthContext';
 
 function ProtocolPage() {
 

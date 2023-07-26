@@ -5,14 +5,14 @@ import Dots from '../assets/images/Dots.svg';
 import Settings from '../assets/images/solar_settings-linear.svg';
 import Remove from '../assets/images/ep_remove.svg';
 import GalaAdd from '../assets/images/gala_add.svg';
-import SwitchSVG from '../assets/images/Vecto3.svg';
 import { useQueueContext } from 'src/context/QueueContext';
 import TicketModal from 'src/components/modals/home-modals/TicketModal';
 import { useAuthContext } from 'src/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { oneQueueI, QueueI } from 'src/common/types/queueContext/queueInterfaceAndTypes';
 
 function HomePage() {
-  const { getCustomers, queues, deleteQueue, getActiveUsers, users, customers, getAllCustomers, deleteMainQueue, addQueue } =
+  const { getCustomers, queues, deleteQueue, getActiveUsers, users, customers, getAllCustomers, deleteMainQueue, addQueue, addCustomer, getOneQueue, oneQueue, changeQueue, deleteUser } =
     useQueueContext();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ function HomePage() {
 
   const navigate = useNavigate();
 
-  const { user } = useAuthContext();
+  const { user, addUser } = useAuthContext();
 
   useEffect(() => {
     if(user === null) {
@@ -34,14 +34,19 @@ function HomePage() {
   const [content1, setContent1] = useState(false);
   const [content2, setContent2] = useState(false);
   const [content3, setContent3] = useState(false);
-  const [content4, setContent4] = useState(false);
 
   const [showOptions, setShowOptions] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
+  const [showModal4, setShowModal4] = useState(false);
+  const [showModal5, setShowModal5] = useState(false);
+  const [showModal6, setShowModal6] = useState(false);
+  const [showModal7, setShowModal7] = useState(false);
+
   const [ queuesID, setQueuesID ] = useState(false);
+  const [ userID, setUserID ] = useState(null);
 
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [selectedTicketNumber, setSelectedTicketNumber] = useState('');
@@ -59,12 +64,32 @@ function HomePage() {
   const [ opDocsInput, setOpDocsInput ] = useState("")
  // Конец State для добавление очереди
 
+ const [ queue, setQueue ] = useState<oneQueueI>();
+
+ // Для формочки добавление пользователя
+ const [ emailInput, setEmailInput ] = useState("")
+ const [ usernameInput, setUsernameInput ] = useState("")
+// Конец State для добавление пользователя
+
+  // Для формочки добавление пользователя
+  const [ categoryInput, setCategoryInput ] = useState("")
+  const [ queueInput, setQueueInput ] = useState("")
+  // Конец State для добавление пользователя
+
   const handleOptionsClick = (itemId: any, ticketNumber: any) => {
     setSelectedItemId(itemId);
     setSelectedTicketNumber(ticketNumber);
     setShowOptions(!showOptions);
     setShowTable(!showTable);
   };
+
+  const handleOptionsClick2 = (itemId: any) => {
+    setUserID(itemId);
+  };
+
+  const handleDeleteConfirm2 = () => {
+    deleteUser(userID)
+  }
 
   const handleTicketModalOpen = (ticketId: any) => {
     setSelectedTicketId(ticketId);
@@ -103,7 +128,54 @@ function HomePage() {
     setShowModal3(false)
   }
 
-  console.log(users)
+  const handleOperatorSubmit = (e:any) => {
+    e.preventDefault();
+    if(!emailInput.trim()) {
+      alert("Заполните обязательные поля")
+    }
+    addUser(emailInput, usernameInput)
+    console.log(`Добавлен ${usernameInput}`)
+    setShowModal4(false)
+  }
+
+  const handleCustomersSubmit = (e: any) => {
+    e.preventDefault();
+    if(!categoryInput.trim() || !queueInput.trim()) {
+      alert("Заполните обязательные поля")
+    }
+    // Приводим queueInput к числовому типу
+    const parsedQueueInput = parseInt(queueInput, 10); // Парсим строку в число
+    addCustomer(categoryInput, parsedQueueInput)
+    setShowModal5(false)
+  }
+
+  const handleDetailQueue = async (queueId: number) => {
+    const id = queueId;
+    await getOneQueue(id);
+    console.log(queue)
+    setShowModal6(true)
+  }
+
+  useEffect(() => {
+    if(oneQueue) {
+      setQueue(oneQueue)
+    }
+  }, [oneQueue])
+
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    const { name, value } = e.target;
+    setQueue((prevQueue: any) => ({
+      ...prevQueue,
+      [name]: value,
+    }));
+  }  
+
+  const handleCustomersSubmit2 = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    changeQueue(oneQueue?.id, queue)
+    setShowModal6(false);
+  };  
 
   return (
     <div className={styles.hero}>
@@ -158,7 +230,7 @@ function HomePage() {
                       src={Settings}
                       className={styles.tripledots}
                       onClick={() =>
-                        handleOptionsClick(item.id, item.ticket_number)
+                        handleDetailQueue(item.id)
                       }
                     />
 
@@ -193,7 +265,7 @@ function HomePage() {
           </div>
           <div className={styles.circles}>
             <div className={styles.queue__state__counter}>{ users?.length }</div>
-            <div className={styles.queue__state__add}>
+            <div className={styles.queue__state__add} onClick={() => setShowModal4(true)} >
               <img src={GalaAdd} alt="" />
             </div>
           </div>
@@ -264,8 +336,8 @@ function HomePage() {
                       src={Remove}
                       className={styles.tripledots}
                       onClick={() => {
-                        handleOptionsClick(item.id, item.ticket_number)
-                        setShowModal(true);
+                        handleOptionsClick2(item.profile_pk)
+                        setShowModal7(true);
                       }}
                     />
                   </div>
@@ -292,7 +364,7 @@ function HomePage() {
             <div className={styles.queue__state__counter}>{ customers?.length }</div>
             <div
               className={styles.queue__state__add}
-              onClick={() => setShowModal(true)}
+              onClick={() => setShowModal5(true)}
             >
               <img src={GalaAdd} alt="" />
             </div>
@@ -469,6 +541,100 @@ function HomePage() {
                 <button>Добавить</button>
                 <button className={styles.cancel} onClick={() => setShowModal3(false)}>Отмена</button>
               </form>
+            </div>
+          </div>
+        )}
+        {showModal4 && (
+          <div className={styles.modal2}>
+            <div className={styles.modalContent2}>
+              
+              <p>
+                Создание пользователя (оператор, админ и.т.д.)
+              </p>
+              <form className={styles.formAdd} onSubmit={(e) => handleOperatorSubmit(e)} >
+                <input type="email" className={styles.name} placeholder='E-mail *' value={emailInput} onChange={(e) => setEmailInput(e.target.value)} />
+                <input type="text" className={styles.description} placeholder='Имя пользователя' value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} />
+                <button style={{ background: "green" }} >Добавить</button>
+                <button className={styles.cancel} onClick={() => setShowModal4(false)}>Отмена</button>
+              </form>
+            </div>
+          </div>
+        )}
+        {showModal5 && (
+          <div className={styles.modal2}>
+            <div className={styles.modalContent2}>
+              
+              <p>
+                Создание талона (админ).
+              </p>
+              <form className={styles.formAdd} onSubmit={(e) => handleCustomersSubmit(e)} >
+                <p style={{ textAlign: "left" }} >Категория:</p>
+                <select value={categoryInput} onChange={(e) => setCategoryInput(e.target.value)}>
+                  <option value={"regular"}>Обычный</option>
+                  <option value={"pensioner"}>Пенсионер</option>
+                  <option value={"pregnant"}>Беременная</option>
+                  <option value={"veteran"}>Ветеран</option>
+                  <option value={"disabled person"}>Инвалид</option>
+                </select>
+                <p style={{ textAlign: "left" }} >Очередь:</p> 
+                <select value={queueInput} onChange={(e) => setQueueInput(e.target.value)}>
+                  { queues.map((queue: any) => (
+                    <option value={queue.id}>{ queue.name }, Филиал №{ queue.branch }</option>
+                  )) }
+                </select>
+                <button>Создать</button>
+                <button className={styles.cancel} onClick={() => setShowModal4(false)}>Отмена</button>
+              </form>
+            </div>
+          </div>
+        )}
+        {showModal6 && (
+          <div className={styles.modal2}>
+            <div className={styles.modalContent2}>
+              
+              <p>
+                Изменить очередь (админ).
+              </p>
+                <form className={styles.formAdd} onSubmit={(e) => handleCustomersSubmit2(e)} >
+                  <input type="text" name='name' value={queue?.name} onChange={handleChange}  />
+                  <input type="text" name='description' value={queue?.description} onChange={handleChange}  />
+                  <input type="text" name='documents' value={queue?.documents} onChange={handleChange}  />
+                  <input type="text" name='optional_documents' value={queue?.optional_documents} onChange={handleChange}  />
+                  <input type="text" name='symbol' value={queue?.symbol.toUpperCase()} maxLength={2} onChange={handleChange}  />
+                  <select name='operator' onChange={handleChange} >
+                    { queue?.operator?.map(( item: any ) => (
+                      <option>Оператор №{ item }</option>
+                    )) }
+                  </select>
+                  <button>Изменить</button>
+                  <button className={styles.cancel} onClick={() => setShowModal6(false)}>Отмена</button>
+                </form>
+            </div>
+          </div>
+        )}
+        {showModal7 && (
+          <div className={styles.modal2}>
+            <div className={styles.modalContent2}>
+              <p>
+                Вы действительно хотите удалить <br /> пользователя{' '}
+                <span className={styles.modalSpan}>
+                  №{userID}
+                </span>
+              </p>
+              <div className={styles.modalButtons}>
+                <button
+                  onClick={() => setShowModal7(false)}
+                  className={styles.cancelBTN}
+                >
+                  Отмена
+                </button>
+                <button
+                  onClick={handleDeleteConfirm2}
+                  className={styles.deleteBTN}
+                >
+                  Удалить
+                </button>
+              </div>
             </div>
           </div>
         )}

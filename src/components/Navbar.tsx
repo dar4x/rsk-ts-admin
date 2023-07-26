@@ -57,12 +57,7 @@ const Navbar: React.FC = () => {
       icon: <img src={UserAvatarSVG} alt="" />,
       title: 'Пользователи СЭО',
       link: '/admin/users',
-    },
-    {
-      icon: <img src={SettingsSVG} alt="" />,
-      title: 'Настройка очередей',
-      link: '/admin/queue-setttings',
-    },
+    }
   ];
 
   const dropPages: IDropPage[] = [

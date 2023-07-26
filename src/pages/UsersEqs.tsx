@@ -38,7 +38,7 @@ function UsersEqs() {
       <div className={styles.content}>
         <div className={styles.users}>
           <div className={styles.users__title}>
-            Количество активных очередей
+            Пользователи СЭО
           </div>
           <div className={styles.circles}>
             <div className={styles.queue__state__counter}>{ users?.length }</div>

@@ -13,7 +13,8 @@ export const ACTIONS = {
   operatorActions: "operatorActions",
   talonActions: "talonActions",
   databases: "databases",
-  stat: "stat"
+  stat: "stat",
+  oneQueue: "oneQueue"
 } as const;
 
 export const TRANSITION = 150;

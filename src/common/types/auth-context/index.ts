@@ -19,4 +19,5 @@ export interface IAuthContextType {
   activateUser: (uid: string, token: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
+  addUser: any;
 }

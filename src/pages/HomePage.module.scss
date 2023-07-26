@@ -355,8 +355,9 @@
   width: 200px;
   height: 45px;
   cursor: auto;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
   margin-right: 3px;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 .modalData__form > input:focus {
@@ -386,6 +387,7 @@
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  border: none;
 }
 
 .modalData__form > input::placeholder {

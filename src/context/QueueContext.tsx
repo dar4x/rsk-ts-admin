@@ -4,6 +4,7 @@ import React, {
   useContext,
   useReducer,
 } from 'react';
+import { QueueI } from 'src/common/types/queueContext/queueInterfaceAndTypes';
 import $axios from 'src/utils/axios';
 import { ACTIONS, BASE_URL } from 'src/utils/const';
 
@@ -38,6 +39,8 @@ function reducer(state: any, action: any) {
   switch (action.type) {
     case ACTIONS.queues:
       return { ...state, queues: action.payload };
+    case ACTIONS.oneQueue:
+      return { ...state, oneQueue: action.payload };
     case ACTIONS.rejectedQueue:
       return { ...state, rejectedQueue: action.payload };
     case ACTIONS.users:
@@ -138,6 +141,16 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
     }
   }
 
+  const deleteUser = async (id:number) => {
+    try {
+      const resposne = await $axios.delete(`${BASE_URL}/admins/users/${id}/`);
+      console.log(resposne.data);
+      getActiveUsers();
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
   const getAllCustomers = async () => {
     try {
@@ -168,6 +181,43 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
         console.log(error)
     }
   }
+
+
+  const addCustomer = async (category: string, queue: number) => {
+    try {
+      const data = {
+        category: category,
+        queue: queue
+      }
+      const response = await $axios.post(`${BASE_URL}/customers/`, data);
+      console.log(response.data)
+      getAllCustomers();
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const changeQueue = async (id: number, data: QueueI) => {
+    try {
+      const response = await $axios.patch(`${BASE_URL}/queues/${id}/`, data);
+      console.log(response.data);
+      getCustomers();
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getOneQueue = async (id: number) => {
+    try {
+      const response = await $axios.get(`${BASE_URL}/queues/${id}/`);
+      dispatch({
+        type: ACTIONS.oneQueue,
+        payload: response.data
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
   
 
   const value = {
@@ -183,7 +233,12 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
     operatorActions: state.operatorActions,
     getTalonActions,
     talonActions: state.talonActions,
-    addQueue
+    addQueue,
+    addCustomer,
+    changeQueue,
+    getOneQueue,
+    oneQueue: state.oneQueue,
+    deleteUser
   };
 
   return (

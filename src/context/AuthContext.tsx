@@ -125,6 +125,19 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const addUser = async (email: string, username: string) => {
+    const data = {
+      email: email,
+      username: username
+    }
+    try {
+      const resposne = await $axios.post(`${BASE_URL}/admins/users/`, data);
+      console.log(resposne?.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const value: IAuthContextType = {
     user: state.user,
     register,
@@ -132,6 +145,7 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     activateUser,
     logout,
     checkAuth,
+    addUser
   };
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>;

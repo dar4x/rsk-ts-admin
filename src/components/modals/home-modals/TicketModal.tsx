@@ -172,12 +172,6 @@ const TicketModal: React.FC<{ ticketId: any; closeModal: () => void }> = ({
                         readOnly
                         placeholder={ticketInfo.category}
                       />
-                      {/* <textarea placeholder='Заметки'></textarea> */}
-                      <div className={styles.modalData__btn_block}>
-                        <button className={styles.modalData_button}>
-                          Закрыть
-                        </button>
-                      </div>
                     </>
                   )}
                 </form>

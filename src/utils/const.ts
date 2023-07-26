@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://35.184.55.194';
+export const BASE_URL = 'http://35.228.114.191';
 
 export const ACTIONS = {
   products: 'products',
@@ -13,7 +13,8 @@ export const ACTIONS = {
   operatorActions: "operatorActions",
   talonActions: "talonActions",
   databases: "databases",
-  stat: "stat"
+  stat: "stat",
+  oneQueue: "oneQueue"
 } as const;
 
 export const TRANSITION = 150;

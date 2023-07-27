@@ -30,3 +30,16 @@ export interface oneQueueI {
     branch: number,
     auto_transfer?: boolean
 }
+
+
+export interface oneUserI {
+    first_name: string,
+    last_name?: string,
+    surname?: string,
+    phone?: string,
+    birth_date?: string,
+    banned?: boolean,
+    position: string,
+    avatar?: string,
+    bio?: string
+}

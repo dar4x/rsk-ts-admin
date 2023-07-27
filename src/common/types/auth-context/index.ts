@@ -5,6 +5,7 @@ export type User = {
 
 export type AuthState = {
   user: User | null;
+  oneUserProfile: any
 };
 
 export type Action = {
@@ -20,4 +21,7 @@ export interface IAuthContextType {
   logout: () => void;
   checkAuth: () => Promise<void>;
   addUser: any;
+  getOneUserProfile: any,
+  oneUserProfile: any,
+  changeUser: any 
 }

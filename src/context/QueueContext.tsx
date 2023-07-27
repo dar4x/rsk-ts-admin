@@ -93,7 +93,7 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
   async function getOperatorActions() {
     try {
       const token = sessionStorage.getItem('access_token');
-      const res = await $axios.get(`http://35.184.55.194/admins/protocol/get_operator_actions/`, {
+      const res = await $axios.get(`${BASE_URL}/admins/protocol/get_operator_actions/`, {
         headers: {
           "Authorization": `Token ${token}`
         }

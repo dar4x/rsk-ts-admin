@@ -9,7 +9,7 @@ import { useQueueContext } from 'src/context/QueueContext';
 import TicketModal from 'src/components/modals/home-modals/TicketModal';
 import { useAuthContext } from 'src/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { oneQueueI, QueueI } from 'src/common/types/queueContext/queueInterfaceAndTypes';
+import { oneQueueI, oneUserI } from 'src/common/types/queueContext/queueInterfaceAndTypes';
 
 function HomePage() {
   const { getCustomers, queues, deleteQueue, getActiveUsers, users, customers, getAllCustomers, deleteMainQueue, addQueue, addCustomer, getOneQueue, oneQueue, changeQueue, deleteUser } =
@@ -23,7 +23,7 @@ function HomePage() {
 
   const navigate = useNavigate();
 
-  const { user, addUser } = useAuthContext();
+  const { user, addUser, getOneUserProfile, oneUserProfile, changeUser } = useAuthContext();
 
   useEffect(() => {
     if(user === null) {
@@ -44,9 +44,11 @@ function HomePage() {
   const [showModal5, setShowModal5] = useState(false);
   const [showModal6, setShowModal6] = useState(false);
   const [showModal7, setShowModal7] = useState(false);
+  const [showModal8, setShowModal8] = useState(false);
 
   const [ queuesID, setQueuesID ] = useState(false);
   const [ userID, setUserID ] = useState(null);
+  const [ userProfile, setUserProfile ] = useState<oneUserI | null>(null);
 
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [selectedTicketNumber, setSelectedTicketNumber] = useState('');
@@ -65,6 +67,7 @@ function HomePage() {
  // Конец State для добавление очереди
 
  const [ queue, setQueue ] = useState<oneQueueI>();
+//  const [ newData, setNewDATA ] = useState<oneUserI>();
 
  // Для формочки добавление пользователя
  const [ emailInput, setEmailInput ] = useState("")
@@ -86,6 +89,18 @@ function HomePage() {
   const handleOptionsClick2 = (itemId: any) => {
     setUserID(itemId);
   };
+
+  const handleOptionsClick3 = async (itemId: any) => {
+    const id = itemId;
+    await getOneUserProfile(id);
+    setShowModal8(true);
+  };
+
+  useEffect(() => {
+    if(oneUserProfile) {
+      setUserProfile(oneUserProfile);
+    }
+  }, [oneUserProfile])
 
   const handleDeleteConfirm2 = () => {
     deleteUser(userID)
@@ -171,11 +186,28 @@ function HomePage() {
     }));
   }  
 
+  function handleChange2(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    const { name, value } = e.target;
+    const obj = {
+      [name]: value
+    }
+    setUserProfile(obj)
+    console.log(userProfile);
+  }
+  
+
   const handleCustomersSubmit2 = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     changeQueue(oneQueue?.id, queue)
     setShowModal6(false);
-  };  
+  };
+  
+  const handleCustomersSubmit3 = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(userProfile)
+    changeUser(oneUserProfile?.id, userProfile)
+    setShowModal6(false);
+  }; 
 
   return (
     <div className={styles.hero}>
@@ -328,7 +360,7 @@ function HomePage() {
                       src={Settings}
                       className={styles.tripledots}
                       onClick={() =>
-                        handleOptionsClick(item.id, item.ticket_number)
+                        handleOptionsClick3(item.profile_pk)
                       }
                     />
 
@@ -635,6 +667,34 @@ function HomePage() {
                   Удалить
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+        {showModal8 && (
+          <div className={styles.modal2}>
+            <div className={styles.modalContent2}>
+              
+              <p>
+                Изменить User
+              </p>
+                <form className={styles.formAdd} onSubmit={(e) => handleCustomersSubmit3(e)} >
+                  <input type="text" name='first_name' value={userProfile?.first_name} onChange={handleChange2}  />
+                  <input type="text" name='last_name' value={userProfile?.last_name} onChange={handleChange2}  />
+                  <input type="text" name='surname' value={userProfile?.surname} onChange={handleChange2}  />
+                  <input type="text" name='phone' value={userProfile?.phone} onChange={handleChange2}  />
+                  <select name='position' onChange={handleChange2} >
+                    <option value={"operator"}>Оператор</option>
+                    <option value={"admin"} >Администратор</option>
+                    <option value={"registrator"} >Регистратор</option>
+                    <option value={"regular"} >Обычный</option>
+                  </select>
+                  <select name='banned' onChange={handleChange2} >
+                    <option value={"true"}>Заблокировать</option>
+                    <option value={"false"} >Разблокировать</option>
+                  </select>
+                  <button>Изменить</button>
+                  <button className={styles.cancel} onClick={() => setShowModal8(false)}>Отмена</button>
+                </form>
             </div>
           </div>
         )}

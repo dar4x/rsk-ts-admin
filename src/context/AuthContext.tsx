@@ -25,16 +25,20 @@ export function useAuthContext(): IAuthContextType {
 
 const initialState: AuthState = {
   user: null,
+  oneUserProfile: null
 };
 
 const ACTIONS = {
   user: 'USER',
+  oneUserProfile: "oneUserProfile"
 };
 
 function reducer(state: AuthState, action: Action): AuthState {
   switch (action.type) {
     case ACTIONS.user:
       return { ...state, user: action.payload };
+    case ACTIONS.oneUserProfile:
+      return { ...state, oneUserProfile: action.payload };
     default:
       return state;
   }
@@ -138,6 +142,28 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const getOneUserProfile = async (id: number) => {
+    try {
+      const resposne = await $axios.get(`${BASE_URL}/admins/get_retrieve/${id}`);
+      dispatch({
+        type: ACTIONS.oneUserProfile,
+        payload: resposne.data
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const changeUser = async (id: number, changedUser: any) => {
+    try {
+      const response = await $axios.patch(`${BASE_URL}/admins/profile/${id}`, changedUser);
+      
+      console.log(response.data);  
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const value: IAuthContextType = {
     user: state.user,
     register,
@@ -145,7 +171,10 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     activateUser,
     logout,
     checkAuth,
-    addUser
+    addUser,
+    getOneUserProfile,
+    changeUser,
+    oneUserProfile: state.oneUserProfile
   };
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>;

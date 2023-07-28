@@ -23,13 +23,21 @@ function HomePage() {
 
   const navigate = useNavigate();
 
-  const { user, addUser, getOneUserProfile, oneUserProfile, changeUser } = useAuthContext();
+  const { user, addUser, getOneUserProfile, oneUserProfile, changeUser, Updatedusers } = useAuthContext();
 
   useEffect(() => {
     if(user === null) {
       navigate("/auth")
     }
   }, [user])
+
+  const [ usersForMap, setUsersForMap ] = useState([]);
+
+  useEffect(() => {
+    if(users) {
+      setUsersForMap(users);
+    }
+  }, [users])
 
   const [content1, setContent1] = useState(false);
   const [content2, setContent2] = useState(false);
@@ -186,13 +194,21 @@ function HomePage() {
     }));
   }  
 
+  const [modifiedFields, setModifiedFields] = useState({});
+
   function handleChange2(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value } = e.target;
-    const obj = {
+    
+    // Обновляем состояние локально при изменении
+    setModifiedFields((prevModifiedFields) => ({
+      ...prevModifiedFields,
+      [name]: value,
+    }));
+    console.log(modifiedFields)
+    setUserProfile((prevUserProfile: any) => ({
+      ...prevUserProfile,
       [name]: value
-    }
-    setUserProfile(obj)
-    console.log(userProfile);
+    }))
   }
   
 
@@ -204,8 +220,9 @@ function HomePage() {
   
   const handleCustomersSubmit3 = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(userProfile)
-    changeUser(oneUserProfile?.id, userProfile)
+    changeUser(oneUserProfile?.id, modifiedFields)
+    setUsersForMap(Updatedusers)
+    console.log(Updatedusers)
     setShowModal6(false);
   }; 
 
@@ -314,7 +331,7 @@ function HomePage() {
           <div className={styles.table}>
             <div className={styles.tableItems}>
               <div className={styles.tableItem__tbody}>
-                {users?.map((item: any, index: number) => (
+                {usersForMap?.map((item: any, index: number) => (
                 <div
                   className={`${styles.tbody__item__talon}`}
                   style={

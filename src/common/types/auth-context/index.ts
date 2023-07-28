@@ -5,7 +5,8 @@ export type User = {
 
 export type AuthState = {
   user: User | null;
-  oneUserProfile: any
+  oneUserProfile: any,
+  Updatedusers: []
 };
 
 export type Action = {
@@ -15,6 +16,7 @@ export type Action = {
 
 export interface IAuthContextType {
   user: User | null;
+  Updatedusers: []
   register: (credential: any) => Promise<void>;
   login: (credentials: any) => Promise<void>;
   activateUser: (uid: string, token: string) => Promise<void>;

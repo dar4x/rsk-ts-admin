@@ -34,7 +34,6 @@ const Navbar: React.FC = () => {
 
   const { logout,user } = useAuthContext();
 
-  console.log(user)
 
   const handleToggleDropDown = () => {
     setIsDropDownOpen((prevState) => !prevState);

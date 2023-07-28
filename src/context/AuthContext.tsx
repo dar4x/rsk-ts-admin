@@ -10,6 +10,7 @@ import {
   AuthState,
   IAuthContextType,
 } from 'src/common/types/auth-context';
+import { useQueueContext } from './QueueContext';
 
 const authContext = createContext<IAuthContextType | null>(null);
 
@@ -25,12 +26,14 @@ export function useAuthContext(): IAuthContextType {
 
 const initialState: AuthState = {
   user: null,
-  oneUserProfile: null
+  oneUserProfile: null,
+  Updatedusers: []
 };
 
 const ACTIONS = {
   user: 'USER',
-  oneUserProfile: "oneUserProfile"
+  oneUserProfile: "oneUserProfile",
+  Updatedusers: "Updatedusers"
 };
 
 function reducer(state: AuthState, action: Action): AuthState {
@@ -39,6 +42,8 @@ function reducer(state: AuthState, action: Action): AuthState {
       return { ...state, user: action.payload };
     case ACTIONS.oneUserProfile:
       return { ...state, oneUserProfile: action.payload };
+    case ACTIONS.Updatedusers:
+      return { ...state, Updatedusers: action.payload };
     default:
       return state;
   }
@@ -63,7 +68,6 @@ function AuthContext({ children }: { children: React.ReactNode }) {
         credentials
       );
       localStorage.setItem('tokens', JSON.stringify(tokens));
-      console.log(tokens)
       sessionStorage.setItem('access_token', tokens.access);
       sessionStorage.setItem('refresh_token', tokens.refresh);
 
@@ -158,7 +162,20 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     try {
       const response = await $axios.patch(`${BASE_URL}/admins/profile/${id}`, changedUser);
       
-      console.log(response.data);  
+      const getUsers = async () => {
+        try {
+          const res = await $axios.get(`${BASE_URL}/admins/get_online_operators/`);
+          dispatch({
+            type: ACTIONS.Updatedusers,
+            payload: res.data
+          })
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+      getUsers()
+      
     } catch (error) {
       console.log(error)
     }
@@ -174,7 +191,8 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     addUser,
     getOneUserProfile,
     changeUser,
-    oneUserProfile: state.oneUserProfile
+    oneUserProfile: state.oneUserProfile,
+    Updatedusers: state.Updatedusers
   };
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>;

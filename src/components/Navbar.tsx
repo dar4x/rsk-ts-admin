@@ -22,8 +22,6 @@ import { IDropPage } from 'src/common/types/dropdown';
 import { useAuthContext } from 'src/context/AuthContext';
 
 const Navbar: React.FC = () => {
-  const [switchState, setSwitchState] = React.useState(false);
-
   const [isActive, setActive] = useState(false);
 
   const handleToggle = () => {
@@ -56,7 +54,12 @@ const Navbar: React.FC = () => {
       icon: <img src={UserAvatarSVG} alt="" />,
       title: 'Пользователи СЭО',
       link: '/admin/users',
-    }
+    },
+    {
+      icon: <img src={SettingsSVG} alt="" />,
+      title: 'Настройка очередей',
+      link: '/admin/queue-setttings',
+    },
   ];
 
   const dropPages: IDropPage[] = [

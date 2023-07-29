@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './HomePage.module.scss';
 import ArrowRight from '../assets/images/chevron-forward-outline.svg';
 import Dots from '../assets/images/Dots.svg';
-import Settings from '../assets/images/solar_settings-linear.svg';
+import Edit from '../assets/images/fluent_edit-20-regular.svg';
 import Remove from '../assets/images/ep_remove.svg';
 import GalaAdd from '../assets/images/gala_add.svg';
 import { useQueueContext } from 'src/context/QueueContext';
@@ -276,7 +276,7 @@ function HomePage() {
                   </div>
                   <div className={styles.tbody__buttons}>
                     <img
-                      src={Settings}
+                      src={Edit}
                       className={styles.tripledots}
                       onClick={() =>
                         handleDetailQueue(item.id)
@@ -374,7 +374,7 @@ function HomePage() {
                   </div>
                   <div className={styles.tbody__buttons}>
                     <img
-                      src={Settings}
+                      src={Edit}
                       className={styles.tripledots}
                       onClick={() =>
                         handleOptionsClick3(item.profile_pk)

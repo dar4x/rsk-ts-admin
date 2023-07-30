@@ -27,13 +27,15 @@ export function useAuthContext(): IAuthContextType {
 const initialState: AuthState = {
   user: null,
   oneUserProfile: null,
-  Updatedusers: []
+  Updatedusers: [],
+  tcp: null
 };
 
 const ACTIONS = {
   user: 'USER',
   oneUserProfile: "oneUserProfile",
-  Updatedusers: "Updatedusers"
+  Updatedusers: "Updatedusers",
+  tcp: "tcp"
 };
 
 function reducer(state: AuthState, action: Action): AuthState {
@@ -44,6 +46,8 @@ function reducer(state: AuthState, action: Action): AuthState {
       return { ...state, oneUserProfile: action.payload };
     case ACTIONS.Updatedusers:
       return { ...state, Updatedusers: action.payload };
+    case ACTIONS.tcp:
+      return { ...state, tcp: action.payload };
     default:
       return state;
   }
@@ -146,6 +150,27 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const getTCPConfig = async () => {
+    try {
+      const response = await $axios.get(`${BASE_URL}/admins/tcp-config/`);
+      dispatch({
+        type: ACTIONS.tcp,
+        payload: response.data
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const changeTCP = async (newTCP: any) => {
+    try {
+      const response = await $axios.put(`${BASE_URL}/admins/tcp-config/`, newTCP);
+      getTCPConfig();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const getOneUserProfile = async (id: number) => {
     try {
       const resposne = await $axios.get(`${BASE_URL}/admins/get_retrieve/${id}`);
@@ -192,7 +217,10 @@ function AuthContext({ children }: { children: React.ReactNode }) {
     getOneUserProfile,
     changeUser,
     oneUserProfile: state.oneUserProfile,
-    Updatedusers: state.Updatedusers
+    Updatedusers: state.Updatedusers,
+    changeTCP,
+    getTCPConfig,
+    tcp: state.tcp
   };
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>;

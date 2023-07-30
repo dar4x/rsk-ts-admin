@@ -8,10 +8,9 @@ import Search from '../assets/images/search.svg';
 import Settings from '../assets/images/setting4.svg';
 import Dropdown from 'src/components/modals/dropmenu/DropMenu';
 import { Link } from 'react-router-dom';
-import { IDropPage } from 'src/common/types/dropdown';
 import classNames from 'classnames';
 import { useQueueContext } from 'src/context/QueueContext';
-import { useAuthContext } from 'src/context/AuthContext';
+
 
 function ProtocolPage() {
 
@@ -52,10 +51,48 @@ function ProtocolPage() {
     setShowTicketModal(true);
   };
 
-  const closeModal = () => {
-    setSelectedTicketId(null);
-    setShowTicketModal(false);
-  };
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState<string>('');
+
+  const [showDeleted, setShowDeleted] = useState(false); // Step 1: State variable for deleted talons filter
+  const [showCreated, setShowCreated] = useState(false);
+  const [showServed, setShowServed] = useState(false);
+  const [showStarted, setShowStarted] = useState(false);
+
+  // Step 2: Modify handleFilterChange to handle "Удаленные" filter
+  const handleFilterChange = (filterOption: string) => {
+    setSelectedFilter(filterOption);
+  
+    if (filterOption === 'cancelled') {
+      setShowDeleted(true);
+      setShowServed(false);
+      setShowCreated(false); // Reset "Созданные" filter state when "Удаленные" filter is selected
+      setShowStarted(false);
+    } else if (filterOption === 'created') {
+      setShowCreated(true);
+      setShowDeleted(false); // Reset "Удаленные" filter state when "Созданные" filter is selected
+      setShowServed(false);
+      setShowStarted(false);
+    } else if(filterOption === 'served') {
+      setShowServed(true);
+      setShowDeleted(false);
+      setShowCreated(false);
+      setShowStarted(false);
+    } else if(filterOption === 'started') {
+      setShowStarted(true);
+      setShowDeleted(false);
+      setShowCreated(false);
+      setShowServed(false);
+    } else {
+      setShowDeleted(false);
+      setShowCreated(false);
+      setShowServed(false);
+      setShowStarted(false);
+    }
+  
+    setCurrentPage(1); // Reset pagination to the first page when filter changes
+  };  
+  
 
   function formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -88,9 +125,18 @@ function ProtocolPage() {
 
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
 
-  const handleToggleDropDown = () => {
-    setIsDropDownOpen((prevState) => !prevState);
+  const handleDropDown = () => {
+    if (isDropDownOpen) {
+      setIsDropDownOpen(false);
+    } else {
+      setIsDropDownOpen(true);
+      // If "По дате" is clicked, toggle the ascending state
+      setAscending((prevState) => !prevState);
+      setCurrentPage(1); // Reset pagination to the first page when sorting order changes
+    }
   };
+  
+  const [ascending, setAscending] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Количество элементов на странице
@@ -100,41 +146,31 @@ function ProtocolPage() {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   // Отфильтрованный список талонов для текущей страницы
-  const currentTalonActions = talonActions?.slice(indexOfFirstItem, indexOfLastItem);
+  const currentTalonActions = talonActions
+  ? talonActions
+      .filter((item: any) =>
+        item.event.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        (showDeleted ? item.action === 'cancelled' : true) &&
+        (showCreated ? item.action === 'created' : true) &&
+        (showServed ? item.action === 'served' : true) &&
+        (showStarted ? item.action === 'started' : true)
+      )
+      .sort((a: any, b: any) => {
+        const dateA = new Date(a.created_at);
+        const dateB = new Date(b.created_at);
+        return ascending ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime();
+      })
+  : [];
 
   // Функция для переключения на следующую страницу
   const nextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
-  // Функция для переключения на предыдущую страницу
+  // Функция для переключен+ия на предыдущую страницу
   const prevPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
   };
-
-  const dropPages: IDropPage[] = [
-    {
-      title: 'По дате',
-      link: '',
-    },
-    {
-      title: 'Удаленные',
-      link: '',
-    },
-    {
-      title: 'Перемещенные',
-      link: '',
-    },
-
-    {
-      title: 'Созданные',
-      link: '',
-    },
-    {
-      title: 'В процессе',
-      link: '',
-    },
-  ];
 
   console.log(talonActions)
 
@@ -209,9 +245,9 @@ function ProtocolPage() {
                     <div className={styles.thead__post}>Оператор</div>
                     <div className={styles.thead__window}>Действия </div>
                   </div>
-                  {operatorActions?.reverse().map((item: any, index: number) => (
+                  {operatorActions?.map((item: any, index: number) => (
                   <div
-                  key={item.id}
+                  key={`item_${index}`}
                     className={`${styles.tbody__item__talon}`}
                     style={
                       index % 2 === 1
@@ -231,24 +267,7 @@ function ProtocolPage() {
                     <div className={styles.tbody__actions}>
                       { item.event }
                     </div>
-                    <div className={styles.tbody__buttons}>
-                      <img
-                        src={Eye}
-                        className={styles.tripledots}
-                        onClick={() =>
-                          handleOptionsClick(item.id, item.ticket_number)
-                        }
-                      />
-
-                      <img
-                        src={Remove}
-                        className={styles.tripledots}
-                        onClick={() => {
-                          handleOptionsClick(item.id, item.ticket_number);
-                          setShowModal(true);
-                        }}
-                      />
-                    </div>
+                   
                   </div>
                   ))}
                   { operatorActions?.length === 0 && (
@@ -269,7 +288,7 @@ function ProtocolPage() {
           <div className={styles.content}>
             <div className={styles.search}>
               <div className={styles.filter}>
-                <div className={styles.settings} onClick={handleToggleDropDown}>
+                <div className={styles.settings} onClick={handleDropDown}>
                   <img src={Settings} alt="" />
                 </div>
                 {isDropDownOpen && (
@@ -277,32 +296,31 @@ function ProtocolPage() {
                     className={styles.drop__menu}
                     isOpen={isDropDownOpen}
                   >
-                    {dropPages.map((page) => (
-                      <ul className={styles.drop__catalog} key={page.title}>
-                        <Link to={page.link}>
-                          <li
-                            className={classNames(styles.drop__catalog__item, {
-                              [styles.logout]: page.title === 'Выход',
-                            })}
-                          >
-                            {page.title}
-                          </li>
+                      <ul className={styles.drop__catalog}>
+                        <Link to={''}>
+                          <li className={classNames(styles.drop__catalog__item)} onClick={() => handleFilterChange('date')}>По дате</li>
+                          <li className={classNames(styles.drop__catalog__item)} onClick={() => handleFilterChange('cancelled')} >Удаленные</li>
+                          <li className={classNames(styles.drop__catalog__item)} onClick={() => handleFilterChange('served')} >Обслуженные</li>
+                          <li className={classNames(styles.drop__catalog__item)} onClick={() => handleFilterChange('created')}>Созданные</li>
+                          <li className={classNames(styles.drop__catalog__item)} onClick={() => handleFilterChange('started')}>Начали обслуживать</li>
                         </Link>
                       </ul>
-                    ))}
                   </Dropdown>
                 )}
               </div>
               <div className={styles.search__bar}>
-                <div>
-                  <input
-                    className={styles.search__input}
-                    type="text"
-                    placeholder="Поиск талонов"
-                  />
-                </div>
-                <div className={styles.find__btn}>
-                  <img src={Search} alt="" />
+                  <div>
+                    <input
+                      className={styles.search__input}
+                      type="text"
+                      placeholder="Поиск талонов"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.find__btn}>
+                    <img src={Search} alt="" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -313,39 +331,22 @@ function ProtocolPage() {
               </div>
               {currentTalonActions?.map((item: any, index: number) => (
               <div
-                key={item.id}
+                key={`item_${index}`}
                 className={`${styles.tbody__item__talon}`}
                 style={
-                  index % 2 === 1
+                  item.id % 2 === 1
                     ? { background: 'rgba(248, 248, 248, 1)' }
                     : undefined
                 }
               >
                 <div className={styles.tbody__time}>
-                  <div className={styles.tbody__number}>{index + 1}.</div>
+                  <div className={styles.tbody__number}>{ index + 1 }.</div>
                   {formatDate(item.created_at)}
                 </div>
                 <div className={styles.tbody__actions}>
                   {item.event}
                 </div>
-                <div className={styles.tbody__buttons}>
-                  <img
-                    src={Eye}
-                    className={styles.tripledots}
-                    onClick={() =>
-                      handleOptionsClick(item.id, item.ticket_number)
-                    }
-                  />
-
-                  <img
-                    src={Remove}
-                    className={styles.tripledots}
-                    onClick={() => {
-                      handleOptionsClick(item.id, item.ticket_number);
-                      setShowModal(true);
-                    }}
-                  />
-                </div>
+                
               </div>
               ))} 
               <div className={styles.pagination}>
@@ -358,12 +359,14 @@ function ProtocolPage() {
                 >
                   Вперед
                 </button>
+                {currentTalonActions.length === 0 && (
+                  <div className={styles.actionsIsZero}>Нет результатов поиска</div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
   );
 }
 

@@ -218,7 +218,74 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
       console.log(error)
     }
   }
+
+  const postQueueBlock = async (id: number) => {
+    try {
+      const response = await $axios.post(`${BASE_URL}/admins/${id}/block_queues/`);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const postQueueTrans = async (id: number) => {
+    try {
+      const response = await $axios.post(`${BASE_URL}/admins/${id}/change_auto_transfer/`);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
   
+  const postQueueMaxCalls = async (id: number, calls: any) => {
+    try {
+      const numberedCalls = parseInt(calls, 10);
+      const dataCalls = {
+        number: numberedCalls
+      }
+      const response = await $axios.post(`${BASE_URL}/admins/${id}/change_max_calls/`, dataCalls);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const postQueueMaxTrans = async (id: number, maxTrans: any) => {
+    try {
+      const data = {
+        number: maxTrans
+      }
+      const response = await $axios.post(`${BASE_URL}/admins/${id}/change_max_transfers/`, data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const postQueueOperatorWaitingTime = async (id: number, time: any) => {
+    try {
+      const data = {
+        time: time
+      }
+      const response = await $axios.post(`${BASE_URL}/admins/${id}/change_operator_waiting_time/`, data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const postQueuePrintingTime = async (id: number, start: any, end: any) => {
+    try {
+      const dataTime = {
+        start: start,
+        end: end
+      }
+      const response = await $axios.post(`${BASE_URL}/admins/${id}/change_printing_time/`, dataTime);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const value = {
     getCustomers,
@@ -238,7 +305,13 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
     changeQueue,
     getOneQueue,
     oneQueue: state.oneQueue,
-    deleteUser
+    deleteUser,
+    postQueueBlock,
+    postQueueMaxCalls,
+    postQueueTrans,
+    postQueueMaxTrans,
+    postQueueOperatorWaitingTime,
+    postQueuePrintingTime,
   };
 
   return (

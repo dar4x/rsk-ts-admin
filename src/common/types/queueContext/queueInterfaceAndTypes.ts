@@ -43,3 +43,15 @@ export interface oneUserI {
     avatar?: string,
     bio?: string
 }
+
+export interface queueSettings {
+    is_blocked: boolean,
+    auto_transfer: string,
+    max_calls: number,
+    max_transfers: string,
+    waiting_time_operator: string,
+    printing_time: string,
+    print_end: string,
+    print_start: string,
+    switch: string
+}

@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Navbar.module.scss';
 import '../styles.scss';
 import LogoSVG from '../assets/images/RSK_Bank_Logo1.svg';
 import AvatarSVG from '../assets/images/avatar.svg';
 import UserAvatarSVG from '../assets/images/UserAvatar.svg';
-import Avatar from '../assets/images/avatar.svg';
-import SwitchoffSVG from '../assets/images/Switch-on.svg';
-import SwitchonSVG from '../assets/images/Switch-off.svg';
 import ChatSVG from '../assets/images/chatbubble-ellipses-outline.svg';
 import HomeSVG from '../assets/images/octicon_home-24.svg';
 import SettingsSVG from '../assets/images/carbon_user-settings.svg';
-import Burger from '../assets/images/quill_hamburger.svg';
+import Settings from '../assets/images/solar_settings-linear.svg';
 
 import { Link } from 'react-router-dom';
 import { Ipage } from 'src/common/types/navbar';
@@ -30,7 +27,7 @@ const Navbar: React.FC = () => {
 
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
 
-  const { logout,user } = useAuthContext();
+  const { logout, user, getTCPConfig, tcp, changeTCP } = useAuthContext();
 
 
   const handleToggleDropDown = () => {
@@ -41,6 +38,13 @@ const Navbar: React.FC = () => {
     handleToggle();
     handleToggleDropDown();
   };
+
+  useEffect(() => {
+    getTCPConfig();
+  }, [])
+
+  const [ tcpChange, setTcpChange ] = useState(false);
+  const [ newTcp, setNewTcp ] = useState('');
 
   //rgba(248, 248, 248, 1)
 
@@ -81,6 +85,15 @@ const Navbar: React.FC = () => {
     },
   ];
 
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    const data = {
+      tcp_port: newTcp
+    }
+    changeTCP(data);
+    setTcpChange(false);
+  }
+
   return (
     <header>
       <div className={styles.container}>
@@ -92,6 +105,15 @@ const Navbar: React.FC = () => {
             <div className={styles.chat}>
               Рабочий чат
               <img src={ChatSVG} alt="" className={styles.chatSVG} />
+            </div>
+            <div className={styles.chat}>
+              Порт TCP: { tcpChange ? (
+                <form onSubmit={handleSubmit} >
+                  <input type="text" value={newTcp} onChange={(e) => setNewTcp(e.target.value)} placeholder='Введите новый порт' />
+                  <button>Сохранить</button>
+                </form>
+              ) : (<span style={{ fontSize: "17px", fontWeight: "700", color: "blue" }} >{ tcp?.tcp_port }</span>) }
+              <img src={Settings} style={{ width: "25px", height: "25px" }} onClick={() => setTcpChange(true)} />
             </div>
           </div>
           <div className={styles.user}>

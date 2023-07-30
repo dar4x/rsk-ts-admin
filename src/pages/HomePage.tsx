@@ -507,6 +507,7 @@ function HomePage() {
           </div>
           )) }
         </div>
+        
         {showModal && (
           <div className={styles.modal2}>
             <div className={styles.modalContent2}>

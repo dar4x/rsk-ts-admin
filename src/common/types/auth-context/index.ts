@@ -6,7 +6,8 @@ export type User = {
 export type AuthState = {
   user: User | null;
   oneUserProfile: any,
-  Updatedusers: []
+  Updatedusers: [],
+  tcp: any
 };
 
 export type Action = {
@@ -25,5 +26,8 @@ export interface IAuthContextType {
   addUser: any;
   getOneUserProfile: any,
   oneUserProfile: any,
-  changeUser: any 
+  changeUser: any,
+  tcp: any,
+  changeTCP: any,
+  getTCPConfig: any
 }

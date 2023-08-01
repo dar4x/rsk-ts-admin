@@ -35,7 +35,7 @@ const ACTIONS = {
   user: 'USER',
   oneUserProfile: "oneUserProfile",
   Updatedusers: "Updatedusers",
-  tcp: "tcp"
+  tcp: "tcp",
 };
 
 function reducer(state: AuthState, action: Action): AuthState {

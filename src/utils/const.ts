@@ -14,7 +14,17 @@ export const ACTIONS = {
   talonActions: "talonActions",
   databases: "databases",
   stat: "stat",
-  oneQueue: "oneQueue"
+  oneQueue: "oneQueue",
+  weekendCalendar: "weekendCalendar",
+  branches: "branches",
+  oneWeekend: "oneWeekend",
+  chats: "chats",
+    messages: "messages",
+    operatorsInBranch: "operatorsInBranch",
+    historyMessages: "historyMessages",
+    createdChat: "createdChat",
+    admin: "admin",
+    messages2: "messages2"
 } as const;
 
 export const TRANSITION = 150;

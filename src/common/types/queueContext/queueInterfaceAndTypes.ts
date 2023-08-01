@@ -55,3 +55,16 @@ export interface queueSettings {
     print_start: string,
     switch: string
 }
+
+export interface calendarI {
+    id: number,
+    holiday: string,
+    date: string,
+    branch: string
+}
+
+export interface ChatI {
+    id: number,
+    user1: number,
+    user2: number
+}

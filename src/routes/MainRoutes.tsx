@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from 'src/layouts/MainLayout';
 import { AuthPage } from 'src/pages/AuthPage';
+import Calendar from 'src/pages/Calendar';
 import DataBasePage from 'src/pages/DataBasePage';
 import HomePage from 'src/pages/HomePage';
 import ProtocolPage from 'src/pages/ProtocolPage';
@@ -21,6 +22,7 @@ const MainRoutes = () => {
         <Route path="/admin/protocol" element={<ProtocolPage />} />
         <Route path="/admin/software/update" element={<SoftwareUpd />} />
         <Route path="/admin/statistic" element={<Statistic />} />
+        <Route path="/admin/calendar" element={<Calendar />} />
       </Route>
       <Route path="auth" element={<AuthPage />} />
     </Routes>

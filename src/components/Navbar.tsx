@@ -80,6 +80,10 @@ const Navbar: React.FC = () => {
       link: '/admin/statistic',
     },
     {
+      title: 'Календарь',
+      link: '/admin/calendar',
+    },
+    {
       title: 'Выход',
       link: '/auth',
     },

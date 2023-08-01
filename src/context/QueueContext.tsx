@@ -30,10 +30,11 @@ const initState = {
   users: [],
   customers: [],
   operatorActions: [],
-  talonActions: []
+  talonActions: [],
+  weekendCalendar: [],
+  branches: [],
+  oneWeekend: null
 };
-
-let newQueues = [];
 
 function reducer(state: any, action: any) {
   switch (action.type) {
@@ -51,6 +52,12 @@ function reducer(state: any, action: any) {
       return { ...state, operatorActions: action.payload };
     case ACTIONS.talonActions:
       return { ...state, talonActions: action.payload };
+    case ACTIONS.weekendCalendar:
+      return { ...state, weekendCalendar: action.payload };
+    case ACTIONS.branches:
+      return { ...state, branches: action.payload };
+    case ACTIONS.oneWeekend:
+      return { ...state, oneWeekend: action.payload };
     default:
       return state;
   }
@@ -80,6 +87,96 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
     }
   }
 
+  async function getCalendar() {
+    try {
+      const token = sessionStorage.getItem('access_token');
+      const resposne = await $axios.get(`${BASE_URL}/branch/calendar/`, {
+        headers: {
+          "Authorization": `Token ${token}`
+        }
+      });
+      dispatch({
+        type: ACTIONS.weekendCalendar,
+        payload: resposne.data.results
+      })
+    } catch (error) {
+      
+    }
+  }
+
+  async function addCalendar(data: any) {
+    try {
+      const token = sessionStorage.getItem("access_token");
+      const resposne = await $axios.post(`${BASE_URL}/branch/calendar/`, data, {
+        headers: {
+          "Authorization": `Token ${token}`
+        }
+      });
+      getCalendar()
+      console.log(resposne.data)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function changeCalendar(id: number, data: any) {
+    try {
+      const token = sessionStorage.getItem("access_token");
+      const response = await $axios.patch(`${BASE_URL}/branch/calendar/${id}`, data, {
+        headers: {
+          "Authorization": `Token ${token}`
+        }
+      });
+      console.log(response)
+      getCalendar()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function deleteCalendar(id: number) {
+    try {
+      const token = sessionStorage.getItem("access_token");
+      const response = await $axios.delete(`${BASE_URL}/branch/calendar/${id}`, {
+        headers: {
+          "Authorization": `Token ${token}`
+        }
+      });
+      console.log(response)
+      getCalendar()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function getBranches() {
+    try {
+      const response = await $axios.get(`${BASE_URL}/branches/`);
+      dispatch({
+        type: ACTIONS.branches,
+        payload: response.data.results
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function getOneWeekend(id: number) {
+    try {
+      const token = sessionStorage.getItem("access_token");
+      const response = await $axios.get(`${BASE_URL}/branch/calendar/${id}/`, {
+        headers: {
+          "Authorization": `Token ${token}`
+        }
+      });
+      dispatch({
+        type: ACTIONS.oneWeekend,
+        payload: response.data
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   async function deleteMainQueue(id: number) {
     try {
@@ -312,6 +409,15 @@ export const QueueContext = ({ children }: PropsWithChildren) => {
     postQueueMaxTrans,
     postQueueOperatorWaitingTime,
     postQueuePrintingTime,
+    getCalendar,
+    weekendCalendar: state.weekendCalendar,
+    addCalendar,
+    changeCalendar,
+    deleteCalendar,
+    getBranches,
+    branches: state.branches,
+    getOneWeekend,
+    oneWeekend: state.oneWeekend
   };
 
   return (
